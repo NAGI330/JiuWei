@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <!-- The main content view -->
+    <FrameLayout
+        android:id="@+id/framelayout3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <!-- The navigation drawer -->
+    <ListView android:id="@+id/left_drawer"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="#33333333"
+        android:dividerHeight="0dp"
+        android:background="#ffeeeeee"
+        android:scrollbars="none"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <RadioGroup
+            android:id="@+id/radioGroup2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:padding="3dp"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/btnPersonalInfo"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:background="@mipmap/personalinfo"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="0dp"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingLeft="0dp"
+                android:textSize="12sp"
+                android:text="活动推送"/>
+            <RadioButton
+                android:id="@+id/btnOther"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="0dp"
+                android:textSize="12sp" />
+
+        </RadioGroup>
+
+
+        <!--使用FrameLayout当做盛放Fragment对象的容器-->
+        <FrameLayout
+            android:id="@+id/framelayout1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <!--中间为一条分割线-->
+        <View
+            android:background="#D6D6D6"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:padding="3dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+            <!--<LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1">-->
+            <RadioButton
+                android:id="@+id/btnPush"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/icon_push"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="0dp"
+                android:textSize="12sp"
+                />
+
+
+            <RadioButton
+                android:id="@+id/btnFriend"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/icon_friend"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="0dp"
+                android:textSize="12sp"
+
+                />
+
+            <!--</LinearLayout>-->
+            <!--给中间凸起按钮预留位置-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+            </LinearLayout>
+            <!--<LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1">-->
+            <RadioButton
+                android:id="@+id/btnMyActivity"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/icon_myactivity"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="0dp"
+                android:textSize="12sp"/>
+            <RadioButton
+                android:id="@+id/btnMsg"
+
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/icon_msg"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="0dp"
+
+                android:textSize="12sp"/>
+
+            <!-- </LinearLayout>-->
+        </RadioGroup>
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_above="@id/radioGroup"-->
+        <!--&gt;-->
+        <!--</LinearLayout>-->
+        <ImageView
+            android:id="@+id/btnCreateActivity"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="-65dp"
+            android:layout_above="@id/radioGroup"
+            android:background="@drawable/icon_createactivity"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true" />
+    </LinearLayout>
+</android.support.v4.widget.DrawerLayout>

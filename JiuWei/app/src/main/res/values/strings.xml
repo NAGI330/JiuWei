@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">JiuWei</string>
+    <string name="baseURL">http://10.0.2.2:8000/</string>
+    <string name="app_name1">NavigaterDrawer</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="drawer_open"> Drawer is opened </string>
+    <string name="drawer_close">Drawer is closed </string>
+</resources>
