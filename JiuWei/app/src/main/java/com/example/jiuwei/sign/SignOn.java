@@ -3,10 +3,8 @@ package com.example.jiuwei.sign;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,16 +13,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.jiuwei.R;
+import com.example.jiuwei.http.IDataListener;
+import com.example.jiuwei.http.Volley;
+import com.example.jiuwei.http.bean.sign.ResponceSign;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /*
@@ -121,7 +115,31 @@ public class SignOn extends AppCompatActivity implements View.OnClickListener {
                     showDialog("邮箱格式不正确！请重新输入");
                 }else if (!cbManual.isChecked()){
                     showDialog("请阅读用户手册");
-                }else signupGet(name, password);
+                }//else signupGet(name, password);
+                else{
+                    String url = "http://10.0.2.2:8000/signon/";
+                    Map<String,String> map = new HashMap<String, String>();
+                    map.put("username",name);
+                    map.put("password",password);
+                    //调用com.example.jiuwei.http包下的volley接口
+                    Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                        @Override
+                        public void onSuccess(ResponceSign responceSign) {
+                            String response = responceSign.msg;
+                            if (response.equals("注册成功")) {
+                                showDialog("注册成功，你可以登录了");
+                            } else if (response.equals("用户名重复")) {
+                                showDialog("用户名重复，请更换一个用户名");
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure() {
+
+                        }
+                    });
+                }
                 break;
             case R.id.backtomain:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -146,65 +164,6 @@ public class SignOn extends AppCompatActivity implements View.OnClickListener {
                 dialog.show();
                 break;
         }
-    }
-    private void signupGet(final String name, final String password) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                BufferedReader reader = null;
-                String url ="http://10.0.2.2:8000/SignIn/";
-                // 生成请求对象
-                try {
-
-                    URL urlobject = new URL(url);
-                    connection = (HttpURLConnection) urlobject.openConnection();
-                    // 设置请求方式
-                    connection.setRequestMethod("POST");
-                    connection.setDoOutput(true);
-                    connection.setDoInput(true);
-                    connection.setUseCaches(false);
-                    connection.setConnectTimeout(8000);
-                    connection.setReadTimeout(8000);
-                    DataOutputStream dataOutputStream =
-                            new DataOutputStream(connection.getOutputStream());
-                    dataOutputStream.writeBytes("username=" + name + "&password=" + password);
-                    dataOutputStream.flush();
-                    dataOutputStream.close();
-                    InputStream inputStream = connection.getInputStream();
-                    //读取服务器返回的信息
-                    reader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null)
-                        response.append(line);
-                    Log.d("tag", response.toString());
-                    if (response.toString().equals("注册成功")) {
-                        Looper.prepare();
-                        showDialog("注册成功，账号为："
-                                + name + "。密码为：" + password + "。你可以登录了");
-                        Looper.loop();
-                    } else if (response.toString().equals("用户名重复")) {
-                        Looper.prepare();
-                        showDialog("用户名重复，请更换一个用户名");
-                        Looper.loop();
-                    }
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (ProtocolException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
-
-
-            }
-        }).start();
     }
 
 

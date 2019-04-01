@@ -79,7 +79,7 @@
             android:textColor="#ffffff"/>
     </TableRow>
     <TableRow>
-        <TextView />
+    <TextView />
     </TableRow>
     <TableRow>
         <TextView
