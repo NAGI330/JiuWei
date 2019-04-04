@@ -10,7 +10,8 @@ import java.io.UnsupportedEncodingException;
  *  1.一个HttpTask的封装由 httpService，httpListener合成
  *  2.当把一个任务丢到线程池时(ThreadPoolManager)，首先JsonHttpService在工作——将请求
  *      发出去，如果结果为200，通过httpListener.onSuccess(in)传给 JsonHttpListener。
- *  3.JsonHttpListener把拿回来的信息变成了Json字符串，再变成对象(alibabaJson包提供的方法)
+ *  3.JsonHttpListener把拿回来的信息变成了Json字符串，再变成对象(结合alibabaJson包提
+ *      供的方法,构建java bean文件)
  *  4.变成对象后，通过线程切换(Handler)切换到主线程操作，结果传给调用者，之后调用者在主线
  *      程写代码即可。
  */

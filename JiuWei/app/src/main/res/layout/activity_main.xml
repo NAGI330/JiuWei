@@ -11,16 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     <!-- The navigation drawer -->
-    <ListView android:id="@+id/left_drawer"
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="#33333333"
-        android:dividerHeight="0dp"
-        android:background="#ffeeeeee"
-        android:scrollbars="none"/>
     <LinearLayout
+        android:id="@+id/LL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -166,4 +158,13 @@
             android:layout_gravity="center"
             android:layout_centerHorizontal="true" />
     </LinearLayout>
+    <ListView android:id="@+id/left_drawer"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="#33333333"
+        android:dividerHeight="0dp"
+        android:background="#ffeeeeee"
+        android:scrollbars="none"/>
 </android.support.v4.widget.DrawerLayout>

@@ -14,7 +14,7 @@ import com.example.jiuwei.R;
 
 public class UserMenu_Fragment extends Fragment implements View.OnClickListener{
 
-
+    public static final String  SELECTED_ITEM = "selected_item" ;
 
     @Nullable
     @Override

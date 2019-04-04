@@ -1,6 +1,9 @@
 package com.example.jiuwei;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -8,12 +11,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,7 +32,10 @@ import com.example.jiuwei.friend.Friend_Fragment;
 import com.example.jiuwei.message.Msg_Fragment;
 import com.example.jiuwei.myActivity.CreateActivity_Fragment;
 import com.example.jiuwei.myActivity.MyActivity_Fragment;
+import com.example.jiuwei.personalInfo.ChangePwd;
+import com.example.jiuwei.personalInfo.Setting;
 import com.example.jiuwei.personalInfo.UserMenu_Fragment;
+import com.example.jiuwei.personalInfo.UserMsg;
 import com.example.jiuwei.push.Push_Fragment;
 
 import java.util.ArrayList;
@@ -38,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RadioButton radio_me;
     //hide_show方法使用
     private Fragment currentFragment;
+    private LinearLayout lL;
     private Fragment fragment_push;
     private Fragment fragment_friend;
     private Fragment fragment_createActivity;
@@ -54,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DrawerLayout mDrawerLayout; // DrawerLayout组件
     ActionBarDrawerToggle mDrawerToggle; //侧滑菜单状态监听器
     Fragment fragment;
+    //private CoordinatorLayout right;
+    //private NavigationView left;
 
     //点击返回键时的时间
     private long exitTime = 0;
@@ -64,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         //初始化页面
         initView();
-
 
     }
 
@@ -94,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
+
+        lL =(LinearLayout) findViewById(R.id.LL);
+
         frameLayout1 = (FrameLayout) findViewById(R.id.framelayout1);
         frameLayout2 = (FrameLayout) findViewById(R.id.framelayout3);
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
@@ -138,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         radio_myac.setOnClickListener(this);
         radio_msg.setOnClickListener(this);
         radio_me.setOnClickListener(this);
+        //lvDrawer.setOnItemClickListener
 
         //初始时向容器中添加第一个Fragment对象
         replaceFragment(fragment_push);
@@ -147,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lvDrawer = (ListView) findViewById(R.id.left_drawer);
         personalAdapter = new PersonalAdapter(this);
         lvDrawer.setAdapter(personalAdapter);
-        //lvDrawer.setOnItemClickListener(new DrawerItemClickListener());
         //为DrawerLayout注册状态监听器
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -169,12 +184,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        //mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                //获取屏幕的宽高
+                WindowManager manager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+                Display display = manager.getDefaultDisplay();
+                //设置右面的布局位置  根据左面菜单的right作为右面布局的left   左面的right+屏幕的宽度（或者right的宽度这里是相等的）为右面布局的right
+                lL.layout(lvDrawer.getRight(), 0, lvDrawer.getRight() + display.getWidth(), display.getHeight());
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+
+
         //mDrawerLayout.openDrawer(Gravity.LEFT);//侧滑打开  不设置则不会默认打开
+        lvDrawer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                switch (position) {
+                    case 1:
+                        Log.i("tag","第一个项目");
+                        Intent intent1 = new Intent(MainActivity.this,
+                                UserMsg.class);
+                        startActivity(intent1);
+                        break;
+                    case 2:
+                        Log.i("tag","第二个项目");
+                        Intent intent2 = new Intent(MainActivity.this,
+                                ChangePwd.class);
+                        startActivity(intent2);
+                        break;
+                    case 3:
+                        Log.i("tag","第三个项目");
+                        Intent intent3 = new Intent(MainActivity.this,
+                                Setting.class);
+                        startActivity(intent3);
+                        break;
+                    case 4:
+                        Log.i("tag","第四个项目");
+                    default:
+                        break;
+                }
+            }
+        });
+
 
     }
-    //向Activity中添加Fragment的方法
 
+
+    //向Activity中添加Fragment的方法
     public void replaceFragment(Fragment fragment) {
 
         //获得Fragment管理器
@@ -241,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnPersonalInfo:
                 Log.d("tag", "点击了me ");
                 mDrawerLayout.openDrawer(Gravity.LEFT);//侧滑打开  不设置则不会默认打开
+                //replaceFragment(fragment_userMenu);
         }
     }
 

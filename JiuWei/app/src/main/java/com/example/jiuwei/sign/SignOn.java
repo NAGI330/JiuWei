@@ -115,8 +115,9 @@ public class SignOn extends AppCompatActivity implements View.OnClickListener {
                     showDialog("邮箱格式不正确！请重新输入");
                 }else if (!cbManual.isChecked()){
                     showDialog("请阅读用户手册");
-                }//else signupGet(name, password);
+                }
                 else{
+                    //String url = "http://10.147.198.231:8000/signon/";
                     String url = "http://10.0.2.2:8000/signon/";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
@@ -127,7 +128,11 @@ public class SignOn extends AppCompatActivity implements View.OnClickListener {
                         public void onSuccess(ResponceSign responceSign) {
                             String response = responceSign.msg;
                             if (response.equals("注册成功")) {
-                                showDialog("注册成功，你可以登录了");
+                                //showDialog("注册成功，你可以登录了");
+                                Toast.makeText(SignOn.this, "注册成功，你可以登录了", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SignOn.this,
+                                        SignIn.class);
+                                startActivity(intent);
                             } else if (response.equals("用户名重复")) {
                                 showDialog("用户名重复，请更换一个用户名");
                             }

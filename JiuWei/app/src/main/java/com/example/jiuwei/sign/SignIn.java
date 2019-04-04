@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,8 +65,9 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     Toast.makeText(this,
                             "账号或者密码不能为空",
                             Toast.LENGTH_SHORT).show();
-                }//else loginGet(name, password);
+                }
                 else{
+                    //String url = "http://10.147.198.231:8000/signin/";
                     String url = "http://10.0.2.2:8000/signin/";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
@@ -82,7 +82,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         public void onSuccess(ResponceSign responceSign) {
                             String response = responceSign.msg;
                             if (response.equals("用户不存在")) {
-                                Log.i("tag","进入用户不存在了");
+                                //Log.i("tag","进入用户不存在了");
                                 showDialog("用户不存在，请修改用户名或者注册新的用户");
                             } else if (response.equals("登录成功")) {
                                 Intent intent = new Intent(SignIn.this,

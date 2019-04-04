@@ -21,6 +21,11 @@
         </activity>
         <activity android:name=".MainActivity">
         </activity>
+        <activity android:name=".personalInfo.Setting">
+        </activity>
+        <activity android:name=".personalInfo.UserMsg">
+        </activity>
+        <activity android:name=".personalInfo.ChangePwd">
+        </activity>
     </application>
-
 </manifest>
