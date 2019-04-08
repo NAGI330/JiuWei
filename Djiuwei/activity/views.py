@@ -30,7 +30,7 @@ class CreateActivity(View):
 			# 请求格式错误处理
 			request_msg = json.loads(request.body)
 			if isinstance(request_msg, dict):
-				return JsonResponse({"errMsg": "typeErr_dict"})
+				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
 			print(e)
 			request_msg = {}
@@ -47,11 +47,11 @@ class CreateActivity(View):
 
 		# 各字段缺失情况处理
 		if not all([activity.activity_name, activity.activity_desc, activity.activity_time, activity.activity_site, activity.limit_num, activity.limit_requirement, activity.owner_id, activity.activity_type]):
-			return JsonResponse({"errMsg": "fieldErr_lose"})
+			return JsonResponse({"msg": "fieldErr_lose"})
 
 		# 数据入库
 		activity.save()
-		return JsonResponse({"infoMsg": "createActivity Successfully"})
+		return JsonResponse({"msg": "createActivity Successfully"})
 
 
 class ChangeActivity(View):

@@ -83,7 +83,7 @@ DATABASES = {
 		'HOST': '127.0.0.1',
 		'PORT': 3306,
 		'USER': 'root',
-		'PASSWORD': '',
+		'PASSWORD': 'gjy743902@BD',
     }
 }
 
@@ -92,7 +92,7 @@ DATABASES = {
 CACHES = {
 	'default': {
 		'BACKEND': 'django_redis.cache.RedisCache',
-		'LOCATION': 'redis://:pwd@127.0.0.1:6379/1',
+		'LOCATION': 'redis://:gjy743902@127.0.0.1:6379/1',
 		'OPTIONS': {
 			'CLIENT_CLASS': 'django_redis.client.DefaultClient',
 		}

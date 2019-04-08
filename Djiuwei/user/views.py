@@ -20,7 +20,7 @@ class SignOnView(View):
 		try:
 			request_msg = json.loads(request.body)
 			if isinstance(request_msg, dict):
-				return JsonResponse({"errMsg": "typeErr_dict"})
+				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
 			print(e)
 			request_msg = {}
@@ -32,7 +32,7 @@ class SignOnView(View):
 
 		# 3.校验数据完整性
 		if not all([username, password, email]):
-			return JsonResponse({"errMsg": "fieldErr_lose"})
+			return JsonResponse({"msg": "fieldErr_lose"})
 
 		# 4.检测用户是否已存在
 		try:
@@ -40,7 +40,7 @@ class SignOnView(View):
 		except User.DoesNotExist:
 			user = None
 		if user:
-			return JsonResponse({"errMsg": "userErr_exist"})
+			return JsonResponse({"msg": "userErr_exist"})
 
 		# 进行用户注册
 		user = User.objects.create_user(username, email, password)
@@ -59,10 +59,10 @@ class SignOnView(View):
 		message = ""
 		sender = settings.EMAIL_HOST_USER
 		receiver = [email]
-		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://127.0.0.1:8000/user/active/{}'>http://127.0.0.1:8000/user/active/{}</a>".format(username, token, token)
+		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://192.168.21.128:8000/user/Active/{}'>http://192.168.21.128/user/Active/{}</a>".format(username, token, token)
 		send_mail(subject, message, sender, receiver, html_message=html_message)
 
-		return JsonResponse({"infoMsg": "signOn successfully"})
+		return JsonResponse({"msg": "signOn successfully"})
 
 
 class ActiveView(View):
@@ -77,10 +77,10 @@ class ActiveView(View):
 			user = User.objects.get(id=user_id)
 			user.is_active = 1
 			user.save()
-			return JsonResponse({"infoMsg": "user is active"})
+			return JsonResponse({"msg": "user is active"})
 		except SignatureExpired as e:
 			print(e)
-			return JsonResponse({"errMsg": "active is out of time"})
+			return JsonResponse({"msg": "active is out of time"})
 
 
 class SignInView(View):
@@ -91,7 +91,7 @@ class SignInView(View):
 		try:
 			request_msg = json.loads(request.body)
 			if isinstance(request_msg, dict):
-				return JsonResponse({"errMsg": "typeErr_dict"})
+				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
 			print(e)
 			request_msg = {}
@@ -102,7 +102,7 @@ class SignInView(View):
 
 		# 3.校验数据
 		if not all([username, password]):
-			return JsonResponse({"errMsg": "fieldErr_lose"})
+			return JsonResponse({"msg": "fieldErr_lose"})
 
 		# 4.登录验证
 		user = authenticate(username=username, password=password)
@@ -110,11 +110,11 @@ class SignInView(View):
 			if user.is_active:
 				# 用户id存入session
 				login(request, user)
-				return JsonResponse({"infoMsg": "sign in successfully"})
+				return JsonResponse({"msg": "signIn successfully"})
 			else:
-				return JsonResponse({"errMsg": "userErr_notactive"})
+				return JsonResponse({"msg": "userErr_notActive"})
 		else:
-			return JsonResponse({"errMsg": "userErr_dataerror"})
+			return JsonResponse({"msg": "userErr_notExist"})
 
 
 class ChangeMsg(View):
