@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import com.example.jiuwei.adapter.PersonalAdapter;
 import com.example.jiuwei.friend.Friend_Fragment;
 import com.example.jiuwei.message.Msg_Fragment;
+import com.example.jiuwei.myActivity.CreateActivity;
 import com.example.jiuwei.myActivity.CreateActivity_Fragment;
 import com.example.jiuwei.myActivity.MyActivity_Fragment;
 import com.example.jiuwei.personalInfo.ChangePwd;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DrawerLayout mDrawerLayout; // DrawerLayout组件
     ActionBarDrawerToggle mDrawerToggle; //侧滑菜单状态监听器
     Fragment fragment;
+    private CreateActivity createActivity;
     //private CoordinatorLayout right;
     //private NavigationView left;
 
@@ -297,8 +300,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("tag", "点击了friend");
                 break;
             case R.id.btnCreateActivity:
-                replaceFragment(fragment_createActivity);
-                textView.setText("添加活动");
+                //replaceFragment(fragment_createActivity);
+                //textView.setText("添加活动");
+                PopupWindow pop = new PopupWindow(v, ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                createActivity = new CreateActivity(MainActivity.this,itemsOnClick);
+                createActivity.showAtLocation(v,
+                        Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
                 Log.d("tag", "点击了plus");
                 break;
             case R.id.btnMyActivity:
@@ -317,6 +324,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //replaceFragment(fragment_userMenu);
         }
     }
+    private View.OnClickListener itemsOnClick =new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+        }
+    };
 
 
     @Override

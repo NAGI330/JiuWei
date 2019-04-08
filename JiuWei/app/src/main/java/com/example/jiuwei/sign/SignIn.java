@@ -67,8 +67,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    //String url = "http://10.147.198.231:8000/signin/";
-                    String url = "http://10.0.2.2:8000/signin/";
+                    String url = "http://192.168.21.128:8000/personal/SignIn";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
                     map.put("password",password);
@@ -81,16 +80,16 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         @Override
                         public void onSuccess(ResponceSign responceSign) {
                             String response = responceSign.msg;
-                            if (response.equals("用户不存在")) {
+                            if (response.equals("userErr_notExist")) {
                                 //Log.i("tag","进入用户不存在了");
-                                showDialog("用户不存在，请修改用户名或者注册新的用户");
-                            } else if (response.equals("登录成功")) {
+                                showDialog("用户不存在，或密码错误");
+                            } else if (response.equals("signIn successfully")) {
                                 Intent intent = new Intent(SignIn.this,
                                         MainActivity.class);
                                 startActivity(intent);
 
-                            } else if (response.equals("密码错误")) {
-                                showDialog("密码错误,请重新输入");
+                            } else if (response.equals("userErr_notActive")) {
+                                showDialog("请先激活邮箱");
                             }
 
                         }

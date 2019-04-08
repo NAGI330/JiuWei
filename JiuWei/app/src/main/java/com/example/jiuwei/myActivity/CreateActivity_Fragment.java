@@ -16,7 +16,7 @@ public class CreateActivity_Fragment extends Fragment implements View.OnClickLis
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_createactivity,container,false);
+        View view=inflater.inflate(R.layout.createactivity,container,false);
         initView(view);
         Log.d("tag", "进入plus了");
         return view;
