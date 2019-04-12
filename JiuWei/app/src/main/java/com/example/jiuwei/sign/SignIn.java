@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,7 +68,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    String url = "http://192.168.21.128:8000/personal/SignIn";
+                    Log.i("tag","nmsl");
+                    String url1 = "http://10.0.2.2:8000/personal/SignIn";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
                     map.put("password",password);
@@ -76,10 +78,11 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
                     //调用com.example.jiuwei.http包下的volley接口
                     Volley.sendJSONRequest(map,
-                            url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                            url1, ResponceSign.class, new IDataListener<ResponceSign>() {
                         @Override
                         public void onSuccess(ResponceSign responceSign) {
                             String response = responceSign.msg;
+                            //baseCookies=responceSign.cookies;
                             if (response.equals("userErr_notExist")) {
                                 //Log.i("tag","进入用户不存在了");
                                 showDialog("用户不存在，或密码错误");
@@ -90,7 +93,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
                             } else if (response.equals("userErr_notActive")) {
                                 showDialog("请先激活邮箱");
-                            }
+                            } else showDialog("异常情况");
 
                         }
 
@@ -103,6 +106,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 break;
 
             case R.id.signup:
+                Log.i("tag","GGG");
                 Intent intent = new Intent(SignIn.this,
                         SignOn.class);
                 startActivity(intent);
