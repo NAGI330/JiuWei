@@ -50,7 +50,13 @@ public class JsonHttpService implements IHttpService{
             //设置请求的方式
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+
+            urlConnection.setRequestProperty("csrf-token","AL9VLCPiysJ56dnfcjmsO4M98WZuVSRrhHWGjJINT8ihHOJIv9BqXKv5UcLJJtDm");
+            urlConnection.setRequestProperty("NMSL", "WSND");
+
             urlConnection.connect();
+
+
 
             //使用字节流发送数据
             OutputStream out = urlConnection.getOutputStream();
@@ -59,6 +65,11 @@ public class JsonHttpService implements IHttpService{
                 //把字节数组的数据(请求数据)写入缓冲区
                 bos.write(requestData);
             }
+//报错
+//            Map<String, List<String>> cookies = urlConnection.getHeaderFields();
+//            List<String> setCookies = cookies.get("Set-Cookie");
+//            System.out.println(setCookies);
+
             //刷新缓冲区，发送数据
             bos.flush();
             out.close();

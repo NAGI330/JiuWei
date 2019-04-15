@@ -9,6 +9,7 @@ from itsdangerous import SignatureExpired
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 # from celery_tasks.tasks import send_register_active_mail
+from time import sleep
 
 # Create your views here.
 
@@ -19,12 +20,19 @@ class SignOnView(View):
 		# 1.请求数据校验
 		try:
 			request_msg = json.loads(request.body)
+<<<<<<< HEAD
 			if not isinstance(request_msg, dict):
+=======
+			print(request_msg)
+			if not isinstance(request_msg, dict):
+				print("abcd")
+>>>>>>> 9ba8df12ca74a941bedbc4f53ce142e3a053769e
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
 			print(e)
 			request_msg = {}
 
+		print(request_msg)
 		# 2.接受数据
 		username = request_msg.get("username", "")
 		password = request_msg.get("password", "")
@@ -42,12 +50,22 @@ class SignOnView(View):
 		if user:
 			return JsonResponse({"msg": "userErr_exist"})
 
+<<<<<<< HEAD
+=======
+		print("2")
+		# 进行用户注册
+		user = User.objects.create_user(username, email, password)
+		user.is_active = 0
+		user.save()
+
+		# 发送激活邮件(为测试使用先阻塞处理)
+>>>>>>> 9ba8df12ca74a941bedbc4f53ce142e3a053769e
 		# 加密
 		serializer = Serializer(settings.SECRET_KEY, 120)
 		info = {"username": username, "password": password, "email": email}
 		token = serializer.dumps(info)
 		token = token.decode("utf-8")
-		
+		print("1")
 		# 邮件信息
 		# 发送激活邮件(为测试使用先阻塞处理)
 		# send_register_active_mail.delay(email, username, token)
@@ -55,9 +73,12 @@ class SignOnView(View):
 		message = ""
 		sender = settings.EMAIL_HOST_USER
 		receiver = [email]
+<<<<<<< HEAD
 		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://127.0.0.1:8000/user/Active/{}'>http://127.0.0.1/user/Active/{}</a>".format(username, token, token)
+=======
+		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://127.0.0.1:8000/personal/Active/{}'>http://127.0.0.1/personal/Active/{}</a>".format(username, token, token)
+>>>>>>> 9ba8df12ca74a941bedbc4f53ce142e3a053769e
 		send_mail(subject, message, sender, receiver, html_message=html_message)
-
 		return JsonResponse({"msg": "signOn successfully"})
 
 
@@ -85,6 +106,8 @@ class SignInView(View):
 	"""登录视图"""
 	def post(self, request):
 		"""登录校验"""
+		#print(request.META.get("HTTP_NMSL"))
+		#print(request.META.get("HTTP_CSRF_TOKEN"))
 		# 1.请求数据校验
 		try:
 			request_msg = json.loads(request.body)
@@ -103,7 +126,9 @@ class SignInView(View):
 			return JsonResponse({"msg": "fieldErr_lose"})
 
 		# 4.登录验证
-		user = authenticate(username=username, password=password)
+		#user = authenticate(username=username, password=password)
+		user = User.objects.get(username=username)
+		print(username,password)
 		if user is not None:
 			if user.is_active:
 				# 用户id存入session

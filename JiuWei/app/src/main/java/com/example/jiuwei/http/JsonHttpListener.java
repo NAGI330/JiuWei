@@ -1,6 +1,7 @@
 package com.example.jiuwei.http;
 
 //不是java.util.logging.Handler
+
 import android.os.Handler;
 import android.os.Looper;
 
@@ -17,6 +18,7 @@ public class JsonHttpListener<M>implements IHttpListener {
     Class<M> responceClass;
     IDataListener<M> dataListener;
 
+
     //用于切换线程
     Handler handler = new Handler(Looper.getMainLooper());
     //构造方法
@@ -31,6 +33,7 @@ public class JsonHttpListener<M>implements IHttpListener {
         String content = getContent(inputStream);
         //结果(Json字符串)转换成对象
         final M responce = JSON.parseObject(content,responceClass);
+
 
         //把结果传送到调用层,handler用于将子线程切换到主线程
         handler.post(new Runnable() {
