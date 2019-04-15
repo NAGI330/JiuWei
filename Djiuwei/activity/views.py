@@ -2,8 +2,9 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.urls import reverse
 from django.views.generic import View
-from activity.models import Activity
+from activity.models import Activity, UserActivityMap, Dynamic
 import json
+from time import mktime, time
 # Create your views here.
 
 
@@ -35,16 +36,18 @@ class CreateActivity(View):
 			print(e)
 			request_msg = {}
 
-		# test
-		print("user status: {}".format(request.user))
+		# 用户登录状态校验
+		user = request.user
+		if not isinstance(user, User):
+			return JsonResponse({"msg": "userErr_unsignIn"})
 
 		activity = Activity()
 		activity.activity_name = request_msg.get("activity_name", "")
 		activity.activity_desc = request_msg.get("activity_desc", "")
 		activity.activity_time = request_msg.get("activity_time", "")
 		activity.activity_site = request_msg.get("activity_site", "")
-		activity.limit_num = request_msg.get("limit_num", 10)
-		# activity.owner_id = request_msg.get("owner_id", 0)
+		activity.limit_num = request_msg.get("limit_num", 0)
+		activity.owner_id = user.id
 		# activity.limit_requirement = request_msg.get("limit_requirement", "")
 		activity.activity_type = request_msg.get("activity_type", "")
 
@@ -54,6 +57,18 @@ class CreateActivity(View):
 
 		# 数据入库
 		activity.save()
+
+		# 创建用户和活动关系映射
+		uamap = UserActivityMap()
+		uamap.user_id = request.user.id
+		uamap.activity_id = activity.id
+		uamap.save()
+
+		# 创建动态
+		dynamic = Dynamic()
+		dynamic.activity_id = activity.id
+		dynamic.save()
+
 		return JsonResponse({"msg": "createActivity Successfully"})
 
 

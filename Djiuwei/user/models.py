@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from db.base_model import BaseModel
-from activity.models import Activity
 
 # Create your models here.
 
@@ -22,20 +21,6 @@ class User(AbstractUser, BaseModel):
 
 	def __str__(self):
 		return self.username
-
-
-class UserActivityMap(BaseModel):
-	"""用户和活动关系映射"""
-	user = models.ForeignKey(User, verbose_name="用户id", on_delete=models.CASCADE)
-	activity = models.ForeignKey(Activity, verbose_name="活动id", on_delete=models.CASCADE)
-
-	class Meta:
-		db_table = "jw_uamap"
-		verbose_name = "用户活动映射"
-		verbose_name_plural = verbose_name
-
-	def __str__(self):
-		return self.user_id
 
 
 class RelationShip(BaseModel):

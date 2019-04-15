@@ -1,5 +1,5 @@
 from django.contrib import admin
-from user.models import User, RelationShip, UserActivityMap
+from user.models import User, RelationShip
 
 # Register your models here.
 
@@ -17,16 +17,6 @@ class UserAdmin(admin.ModelAdmin):
 	ordering = ["create_time", "is_active"]
 
 admin.site.register(User, UserAdmin)
-
-
-class UserActivityMapAdmin(admin.ModelAdmin):
-	"""用户活动关系后台管理"""
-	list_display = ("id", "user_id", "activity_id")
-	list_filter = ("user_id",)
-	search_fields = ("user_id",)
-	ordering = ["create_time"]
-
-admin.site.register(UserActivityMap, UserActivityMapAdmin)
 
 
 class RelationShipAdmin(admin.ModelAdmin):
