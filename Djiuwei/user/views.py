@@ -19,7 +19,7 @@ class SignOnView(View):
 		# 1.请求数据校验
 		try:
 			request_msg = json.loads(request.body)
-			if isinstance(request_msg, dict):
+			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
 			print(e)
@@ -42,24 +42,20 @@ class SignOnView(View):
 		if user:
 			return JsonResponse({"msg": "userErr_exist"})
 
-		# 进行用户注册
-		user = User.objects.create_user(username, email, password)
-		user.is_active = 0
-		user.save()
-
-		# 发送激活邮件(为测试使用先阻塞处理)
 		# 加密
-		serializer = Serializer(settings.SECRET_KEY, 3600)
-		info = {"confirm": user.id}
+		serializer = Serializer(settings.SECRET_KEY, 120)
+		info = {"username": username, "password": password, "email": email}
 		token = serializer.dumps(info)
 		token = token.decode("utf-8")
 		
 		# 邮件信息
+		# 发送激活邮件(为测试使用先阻塞处理)
+		# send_register_active_mail.delay(email, username, token)
 		subject = "久违欢迎你!!!"
 		message = ""
 		sender = settings.EMAIL_HOST_USER
 		receiver = [email]
-		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://192.168.21.128:8000/user/Active/{}'>http://192.168.21.128/user/Active/{}</a>".format(username, token, token)
+		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://127.0.0.1:8000/user/Active/{}'>http://127.0.0.1/user/Active/{}</a>".format(username, token, token)
 		send_mail(subject, message, sender, receiver, html_message=html_message)
 
 		return JsonResponse({"msg": "signOn successfully"})
@@ -70,11 +66,13 @@ class ActiveView(View):
 	def get(self, request, token):
 		"""进行用户激活"""
 		# 解密
-		serializer = Serializer(settings.SECRET_KEY, 3600)
+		serializer = Serializer(settings.SECRET_KEY, 120)
 		try:
 			info = serializer.loads(token)
-			user_id = info['confirm']
-			user = User.objects.get(id=user_id)
+			username = info['username']
+			password = info['password']
+			email = info['email']
+			user = User.objects.create_user(username, email, password)
 			user.is_active = 1
 			user.save()
 			return JsonResponse({"msg": "user is active"})
@@ -90,7 +88,7 @@ class SignInView(View):
 		# 1.请求数据校验
 		try:
 			request_msg = json.loads(request.body)
-			if isinstance(request_msg, dict):
+			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
 			print(e)
