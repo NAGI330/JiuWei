@@ -43,7 +43,7 @@ class CreateActivity(View):
 		activity.activity_desc = request_msg.get("activity_desc", "")
 		activity.activity_time = request_msg.get("activity_time", "")
 		activity.activity_site = request_msg.get("activity_site", "")
-		activity.limit_num = request_msg.get("limit_num", 0)
+		activity.limit_num = request_msg.get("limit_num", 10)
 		# activity.owner_id = request_msg.get("owner_id", 0)
 		# activity.limit_requirement = request_msg.get("limit_requirement", "")
 		activity.activity_type = request_msg.get("activity_type", "")
