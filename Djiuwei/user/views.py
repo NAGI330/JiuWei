@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login
 
 # Create your views here.
 
+
 class SignOnView(View):
 	"""注册视图"""
 	def post(self, request):
@@ -108,7 +109,8 @@ class SignInView(View):
 			if user.is_active:
 				# 用户id存入session
 				login(request, user)
-				return JsonResponse({"msg": "signIn successfully"})
+				user_id = request.user.id if isinstance(request.user, User) else 0
+				return JsonResponse({"msg": "signIn successfully", "Cookie": request.COOKIES})
 			else:
 				return JsonResponse({"msg": "userErr_notActive"})
 		else:
