@@ -1,5 +1,6 @@
 package com.example.jiuwei.sign;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +13,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.example.jiuwei.MainActivity;
 import com.example.jiuwei.R;
+import com.example.jiuwei.http.GetCookie;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
 import com.example.jiuwei.http.bean.sign.ResponceSign;
@@ -32,15 +36,22 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     EditText etNameText = null;
     EditText etPasswordText = null;
 
+    private static Context mContext;
+    public static Context getmContext(){
+        return mContext;
+    }
+
+    private GetCookie getCookie;
     //private String baseURL = "http://127.0.0.1:8000/";
     //private String baseURL = "http://10.0.2.2:8000/";
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.sign_in);
+        mContext =getApplicationContext();
         setContentView(R.layout.sign_in);
+
+        //实例化 （，数据库名称，工厂，版本号）
+        getCookie = new GetCookie(SignIn.this, "db_userCookie", null, 1);
         //绑定
         btnLogin =(Button) findViewById(R.id.login);
         tvSignup = (TextView) findViewById(R.id.signup);
@@ -56,6 +67,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
 
+
     public void onClick(View v) {
         // 获取用户输入的用户名和密码
         String name = etNameText.getText().toString();
@@ -68,7 +80,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Log.i("tag","nmsl");
                     String url1 = "http://10.0.2.2:8000/personal/SignIn";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
@@ -82,14 +93,24 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         @Override
                         public void onSuccess(ResponceSign responceSign) {
                             String response = responceSign.msg;
-                            //baseCookies=responceSign.cookies;
                             if (response.equals("userErr_notExist")) {
-                                //Log.i("tag","进入用户不存在了");
                                 showDialog("用户不存在，或密码错误");
                             } else if (response.equals("signIn successfully")) {
+                                String responseCookie = responceSign.cookie;
+                                JSONObject json =  JSON.parseObject(responseCookie);
+                                String cookie_value = json.get("session_id").toString();
+                                Log.i("nihao",cookie_value);
+                                //将cookie存入数据库
+                                getCookie.insertData(getCookie.getReadableDatabase(),1,cookie_value);
+                                //测试取数据
+                                Log.i("测试读数据","abcd");
+                                String cookie = getCookie.queryData();
+                                Log.i("测试读数据",cookie);
                                 Intent intent = new Intent(SignIn.this,
                                         MainActivity.class);
                                 startActivity(intent);
+                                Log.i("signin",responceSign.msg);
+                                Log.i("signin",responceSign.cookie);
 
                             } else if (response.equals("userErr_notActive")) {
                                 showDialog("请先激活邮箱");
@@ -106,7 +127,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 break;
 
             case R.id.signup:
-                Log.i("tag","GGG");
                 Intent intent = new Intent(SignIn.this,
                         SignOn.class);
                 startActivity(intent);

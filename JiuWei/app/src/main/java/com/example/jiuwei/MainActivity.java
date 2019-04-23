@@ -1,6 +1,7 @@
 package com.example.jiuwei;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
@@ -22,7 +24,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -32,7 +33,6 @@ import com.example.jiuwei.adapter.PersonalAdapter;
 import com.example.jiuwei.friend.Friend_Fragment;
 import com.example.jiuwei.message.Msg_Fragment;
 import com.example.jiuwei.myActivity.CreateActivity;
-import com.example.jiuwei.myActivity.CreateActivity_Fragment;
 import com.example.jiuwei.myActivity.MyActivity_Fragment;
 import com.example.jiuwei.personalInfo.ChangePwd;
 import com.example.jiuwei.personalInfo.Setting;
@@ -62,25 +62,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FrameLayout frameLayout1;
     private FrameLayout frameLayout2;
 
+
+
     ListView lvDrawer; //侧滑菜单视图
     PersonalAdapter personalAdapter; // 侧滑菜单ListView的Adapter
     DrawerLayout mDrawerLayout; // DrawerLayout组件
     ActionBarDrawerToggle mDrawerToggle; //侧滑菜单状态监听器
     Fragment fragment;
-    private CreateActivity createActivity;
-    //private CoordinatorLayout right;
-    //private NavigationView left;
-
     //点击返回键时的时间
     private long exitTime = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //初始化页面
         initView();
-
     }
 
     //重写手机物理按键
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return super.onKeyDown(keyCode, event);
     }
+
 
     //创建退出方法exit()
     public void exit() {
@@ -125,13 +125,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         radio_msg = (RadioButton) findViewById(R.id.btnMsg);
         radio_me = (RadioButton) findViewById(R.id.btnPersonalInfo);
 
+
         //初始化当前fragment,hide_show方法使用
-        currentFragment = new CreateActivity_Fragment();
 
         //创建Fragment对象及集合
         fragment_push = new Push_Fragment();
         fragment_friend = new Friend_Fragment();
-        fragment_createActivity = new CreateActivity_Fragment();
         fragment_myActivity = new MyActivity_Fragment();
         fragment_msg = new Msg_Fragment();
         fragment_userMenu = new UserMenu_Fragment();
@@ -249,6 +248,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void showDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message);
+        builder.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     //向Activity中添加Fragment的方法
     public void replaceFragment(Fragment fragment) {
@@ -300,12 +312,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("tag", "点击了friend");
                 break;
             case R.id.btnCreateActivity:
-                //replaceFragment(fragment_createActivity);
-                //textView.setText("添加活动");
-                PopupWindow pop = new PopupWindow(v, ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                createActivity = new CreateActivity(MainActivity.this,itemsOnClick);
-                createActivity.showAtLocation(v,
-                        Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+                Intent intent = new Intent(MainActivity.this,
+                        CreateActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.pop_enter_anim, R.anim.pop_exit_anim);
                 Log.d("tag", "点击了plus");
                 break;
             case R.id.btnMyActivity:
@@ -321,15 +331,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnPersonalInfo:
                 Log.d("tag", "点击了me ");
                 mDrawerLayout.openDrawer(Gravity.LEFT);//侧滑打开  不设置则不会默认打开
-                //replaceFragment(fragment_userMenu);
         }
     }
-    private View.OnClickListener itemsOnClick =new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-        }
-    };
 
 
     @Override
@@ -338,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         viewGroup.removeAllViews();
         super.finish();
     }
+
 }
 
 

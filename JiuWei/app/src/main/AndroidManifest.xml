@@ -27,5 +27,8 @@
         </activity>
         <activity android:name=".personalInfo.ChangePwd">
         </activity>
+        <activity android:name=".myActivity.CreateActivity"
+            android:theme="@style/pop">
+        </activity>
     </application>
 </manifest>

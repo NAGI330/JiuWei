@@ -1,5 +1,10 @@
 package com.example.jiuwei.http;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.example.jiuwei.sign.SignIn;
+
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +15,12 @@ public class JsonHttpService implements IHttpService{
     private String url;
     private byte[] requestData;
     IHttpListener httpListener;
+    //获取context!!!!!
+    SignIn signIn;
+    Context context =signIn.getmContext();
+    GetCookie getCookie = new GetCookie(context, "db_userCookie", null, 1);
+    String cookie = "session_id="+getCookie.queryData();
+
     @Override
     public void setUrl(String url) {
         this.url = url;
@@ -50,10 +61,9 @@ public class JsonHttpService implements IHttpService{
             //设置请求的方式
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-
             urlConnection.setRequestProperty("csrf-token","AL9VLCPiysJ56dnfcjmsO4M98WZuVSRrhHWGjJINT8ihHOJIv9BqXKv5UcLJJtDm");
-            urlConnection.setRequestProperty("NMSL", "WSND");
-
+            urlConnection.setRequestProperty("Cookie", cookie);
+            Log.i("HTTP",cookie);
             urlConnection.connect();
 
 
