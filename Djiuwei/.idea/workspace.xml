@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7d2d3367-a6cf-4e5b-84c8-e433e8fa3b40" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Djiuwei/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Djiuwei/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity/migrations/0002_auto_20190408_1704.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity/migrations/0002_auto_20190415_1941.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity/migrations/0003_auto_20190415_1947.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity/migrations/0004_auto_20190415_2010.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity/migrations/0005_remove_activity_limit_requirement.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/activity/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/activity/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/migrations/0002_auto_20190408_1637.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/migrations/0003_auto_20190408_1704.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/migrations/0004_auto_20190408_1721.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="7d2d3367-a6cf-4e5b-84c8-e433e8fa3b40" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
