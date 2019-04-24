@@ -83,7 +83,6 @@ class ActiveView(View):
 
 
 class SignInView(View):
-<<<<<<< HEAD
     """登录视图"""
 
     def post(self, request):
@@ -119,40 +118,6 @@ class SignInView(View):
                 return JsonResponse({"msg": "userErr_notActive"})
         else:
             return JsonResponse({"msg": "userErr_notExist"})
-=======
-	"""登录视图"""
-	def post(self, request):
-		"""登录校验"""
-		# 1.请求数据校验
-		try:
-			request_msg = json.loads(request.body)
-			if not isinstance(request_msg, dict):
-				return JsonResponse({"msg": "typeErr_dict"})
-		except Exception as e:
-			print(e)
-			request_msg = {}
-
-		# 2.接受数据
-		username = request_msg.get("username", "")
-		password = request_msg.get("password", "")
-
-		# 3.校验数据
-		if not all([username, password]):
-			return JsonResponse({"msg": "fieldErr_lose"})
-
-		# 4.登录验证
-		user = authenticate(username=username, password=password)
-		if user is not None:
-			if user.is_active:
-				# 用户id存入session
-				session_id = signIn(user)
-				cookie = {"session_id": session_id}
-				return JsonResponse({"msg": "signIn successfully", "Cookie": cookie})
-			else:
-				return JsonResponse({"msg": "userErr_notActive"})
-		else:
-			return JsonResponse({"msg": "userErr_notExist"})
->>>>>>> 401e414a050cc802ec6bb1318c0e4cb33a7d525e
 
 
 class ChangeMsg(View):

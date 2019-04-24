@@ -4,16 +4,9 @@ from django.urls import reverse
 from django.views.generic import View
 from activity.models import Activity, UserActivityMap, Dynamic
 import json
-from time import mktime, time
-<<<<<<< HEAD
-from datetime import  datetime
-
-
-=======
 from utils.user_status import checkStatus
 from user.models import User
-from datetime import datetime
->>>>>>> 401e414a050cc802ec6bb1318c0e4cb33a7d525e
+from datetime import  datetime
 # Create your views here.
 
 
@@ -31,7 +24,6 @@ class PushHot(View):
 
 
 class CreateActivity(View):
-<<<<<<< HEAD
     """创建活动"""
 
     def get(self, request):
@@ -84,61 +76,6 @@ class CreateActivity(View):
         dynamic.save()
 
         return JsonResponse({"msg": "createActivity Successfully"})
-=======
-	"""创建活动"""
-	def get(self, request):
-		return JsonResponse({"createActivity": 1})
-
-	def post(self, request):
-		try:
-			# 请求格式错误处理
-			request_msg = json.loads(request.body)
-			if not isinstance(request_msg, dict):
-				return JsonResponse({"msg": "typeErr_dict"})
-		except Exception as e:
-			print(e)
-			request_msg = {}
-
-		# 用户登录状态校验
-		user = checkStatus(request.COOKIES)
-		print(user)
-		if not isinstance(user, User):
-			return JsonResponse({"msg": "userErr_unsignIn"})
-
-		activity = Activity()
-		activity.activity_name = request_msg.get("activity_name", "")
-		activity.activity_desc = request_msg.get("activity_desc", "")
-		activity_time = request_msg.get("activity_time", "")
-		ymd, hms = activity_time.split(" ")
-		year, month, day = list(map(int, ymd.split("-")))
-		hour, minute = list(map(int, hms.split(":")))
-		activity.activity_time = datetime(year, month, day, hour, minute, 0)
-		activity.activity_site = request_msg.get("activity_site", "")
-		activity.limit_num = request_msg.get("limit_num", 0)
-		activity.owner_id = user.id
-		# activity.limit_requirement = request_msg.get("limit_requirement", "")
-		activity.activity_type = request_msg.get("activity_type", "")
-
-		# 各字段缺失情况处理
-		if not all([activity.activity_name, activity.activity_desc, activity.activity_time, activity.activity_site, activity.limit_num, activity.owner_id, activity.activity_type]):
-			return JsonResponse({"msg": "fieldErr_lose"})
-
-		# 数据入库
-		activity.save()
-
-		# 创建用户和活动关系映射
-		uamap = UserActivityMap()
-		uamap.user_id = user.id
-		uamap.activity_id = activity.id
-		uamap.save()
-
-		# 创建动态
-		dynamic = Dynamic()
-		dynamic.activity_id = activity.id
-		dynamic.save()
-
-		return JsonResponse({"msg": "createActivity Successfully"})
->>>>>>> 401e414a050cc802ec6bb1318c0e4cb33a7d525e
 
 
 class ChangeActivity(View):
@@ -149,14 +86,8 @@ class ChangeActivity(View):
 
 
 class MyActivity(View):
-<<<<<<< HEAD
     """我的活动视图"""
 
     def post(self, request):
         return JsonResponse({"myActivity": 1})
-=======
-	"""我的活动视图"""
-	def post(self, request):
-		return JsonResponse({"myActivity": 1})
 
->>>>>>> 401e414a050cc802ec6bb1318c0e4cb33a7d525e
