@@ -33,8 +33,10 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     //实例化
     Button btnLogin = null;
     TextView tvSignup = null;
+    TextView tvFindPwd = null;
     EditText etNameText = null;
     EditText etPasswordText = null;
+
 
     private static Context mContext;
     public static Context getmContext(){
@@ -57,10 +59,12 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         tvSignup = (TextView) findViewById(R.id.signup);
         etNameText = (EditText) findViewById(R.id.username);
         etPasswordText = (EditText) findViewById(R.id.userpassword);
+        tvFindPwd =(TextView) findViewById(R.id.findpwd);
 
 
         btnLogin.setOnClickListener(SignIn.this);
         tvSignup.setOnClickListener(SignIn.this);
+        tvFindPwd.setOnClickListener(SignIn.this);
 
 
 
@@ -80,7 +84,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    String url1 = "http://10.0.2.2:8000/personal/SignIn";
+                    String select = String.format(getString(R.string.baseURL));
+                    String url1 = select+"personal/SignIn";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
                     map.put("password",password);
@@ -130,6 +135,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 Intent intent = new Intent(SignIn.this,
                         SignOn.class);
                 startActivity(intent);
+                break;
+            case R.id.findpwd:
                 break;
         }
 

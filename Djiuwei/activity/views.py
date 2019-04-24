@@ -5,10 +5,7 @@ from django.views.generic import View
 from activity.models import Activity, UserActivityMap, Dynamic
 import json
 from time import mktime, time
-<<<<<<< HEAD
 from datetime import  datetime
-=======
->>>>>>> 77b7481a1b00a05546a5f8e94f8833ffa46d5881
 
 
 # Create your views here.
@@ -36,25 +33,17 @@ class CreateActivity(View):
         return JsonResponse({"createActivity": 1})
 
     def post(self, request):
-<<<<<<< HEAD
         print(request.COOKIES)
         try:
             # 请求格式错误处理
             request_msg = json.loads(request.body)
             if not isinstance(request_msg, dict):
-=======
-        try:
-            # 请求格式错误处理
-            request_msg = json.loads(request.body)
-            if isinstance(request_msg, dict):
->>>>>>> 77b7481a1b00a05546a5f8e94f8833ffa46d5881
                 return JsonResponse({"msg": "typeErr_dict"})
         except Exception as e:
             print(e)
             request_msg = {}
 
         user = request.user
-<<<<<<< HEAD
         print(user)
         activity = Activity()
         activity.activity_name = request_msg.get("activity_name", "")
@@ -64,15 +53,6 @@ class CreateActivity(View):
         year, month, day = list(map(int, ymd.split("-")))
         hour, minute = list(map(int, hms.split(":")))
         activity.activity_time = datetime(year, month, day, hour, minute, 0)
-=======
-        activity = Activity()
-        activity.activity_name = request_msg.get("activity_name", "")
-        activity.activity_desc = request_msg.get("activity_desc", "")
-        activity_time = request_msg.get("activity_time", "").split("-")
-        if len(activity_time) != 3:
-            return JsonResponse({"msg": "timeErr"})
-        year, month, day = list[map(int, activity_time.split("-"))]
->>>>>>> 77b7481a1b00a05546a5f8e94f8833ffa46d5881
         activity.activity_site = request_msg.get("activity_site", "")
         activity.limit_num = request_msg.get("limit_num", 10)
         # activity.limit_requirement = request_msg.get("limit_requirement", "")
@@ -113,8 +93,4 @@ class MyActivity(View):
     """我的活动视图"""
 
     def post(self, request):
-<<<<<<< HEAD
         return JsonResponse({"myActivity": 1})
-=======
-        return JsonResponse({"myActivity": 1})
->>>>>>> 77b7481a1b00a05546a5f8e94f8833ffa46d5881

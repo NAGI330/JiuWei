@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jiuwei.R;
 import com.example.jiuwei.datetimeselect.CustomDatePicker;
@@ -32,9 +33,6 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.createactivity);
-       // userId = useridCookie.getUserid();
-
-
 
 
         TextView canaleTv = (TextView) findViewById(R.id.createCancel);
@@ -88,10 +86,8 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void initTimerPicker() {
-        String beginTime = "2018-10-17 18:00";
-        String endTime = DateFormatUtils.long2Str(System.currentTimeMillis(), true);
-
-        //mTvSelectedTime.setText(endTime);
+        String beginTime = DateFormatUtils.long2Str(System.currentTimeMillis(), true);
+        String endTime = "2020-12-31 23:59";
         acTimeTv.setText(beginTime);
         //acTimeTv.setText(endTime);
         // 通过日期字符串初始化日期，格式请用：yyyy-MM-dd HH:mm
@@ -164,7 +160,8 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
                     showDialog("活动时间不能为空");
                 }
                 else{
-                    String url = "http://10.0.2.2:8000/activity/createActivity";
+                    String select = String.format(getString(R.string.baseURL));
+                    String url = select+"activity/createActivity";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("activity_name",activityName);
                     map.put("activity_desc",activityDescribe);
@@ -177,7 +174,8 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
                         public void onSuccess(ResponceSign responceSign) {
                             String response = responceSign.msg;
                             if (response.equals("createActivity Successfully")) {
-                                showDialog("活动创建成功！");
+                                Toast.makeText(CreateActivity.this, "活动创建成功！", Toast.LENGTH_SHORT).show();
+                                finish();
                             }else if(response.equals("fieldErr_lose")){
                                 showDialog("字段缺失");
                             }

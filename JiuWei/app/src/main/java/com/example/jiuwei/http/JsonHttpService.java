@@ -61,7 +61,6 @@ public class JsonHttpService implements IHttpService{
             //设置请求的方式
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-            urlConnection.setRequestProperty("csrf-token","AL9VLCPiysJ56dnfcjmsO4M98WZuVSRrhHWGjJINT8ihHOJIv9BqXKv5UcLJJtDm");
             urlConnection.setRequestProperty("Cookie", cookie);
             Log.i("HTTP",cookie);
             urlConnection.connect();
