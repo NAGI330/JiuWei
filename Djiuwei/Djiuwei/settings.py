@@ -45,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -83,7 +83,7 @@ DATABASES = {
 		'HOST': '127.0.0.1',
 		'PORT': 3306,
 		'USER': 'root',
-		'PASSWORD': '',
+		'PASSWORD': 'gjy743902@BD',
     }
 }
 
@@ -92,7 +92,7 @@ DATABASES = {
 CACHES = {
 	'default': {
 		'BACKEND': 'django_redis.cache.RedisCache',
-		'LOCATION': 'redis://:duanchao132456@127.0.0.1:6379/1',
+		'LOCATION': 'redis://:gjy743902@127.0.0.1:6379/2',
 		'OPTIONS': {
 			'CLIENT_CLASS': 'django_redis.client.DefaultClient',
 		}
