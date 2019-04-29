@@ -8,62 +8,92 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.example.jiuwei.LocalSQLite.MySQLiteOpenHelper;
 import com.example.jiuwei.R;
-import com.example.jiuwei.HistoryActivityListTest;
+import com.example.jiuwei.http.IDataListener;
+import com.example.jiuwei.http.Volley;
+import com.example.jiuwei.http.bean.ResponceSign;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class HistoryFragment extends Fragment implements View.OnClickListener{
-
-
+    public int page =1;
+    private View view;
+    private MySQLiteOpenHelper mySQLiteOpenHelper;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_myactivity_history,container,false);
+        //View view=inflater.inflate(R.layout.fragment_history,container,false);
+        view=inflater.inflate(R.layout.fragment_mine,container,false);
         initView(view);
-        initEvent(view);
         return view;
     }
 
 
     private void initView(View view) {
-
-    }
-
-    private void initEvent(View view) {
-        Button bt;//activity_main.xml里的Button
         ListView lv;//activity_main.xml里的ListView
+        //实例化 （，数据库名称，工厂，版本号）
+        mySQLiteOpenHelper = new MySQLiteOpenHelper(this.getActivity(), "db_jiuwei", null, 1);
         BaseAdapter adapter;//要实现的类
-        final List<HistoryActivityListTest> activityList = new ArrayList<HistoryActivityListTest>();//实体类
-        lv = (ListView)view.findViewById(R.id.lvHistory);
-        //模拟数据库
-        for (int i = 0; i < 5; i++) {
-            HistoryActivityListTest al = new HistoryActivityListTest();//给实体类赋值
-            al.setActivityName("KTV"+i);
-            al.setStartDate("2019-09-26");
-            activityList.add(al);
-        }
+        final List<Activity> activity = new ArrayList<Activity>();//实体类
+        lv = (ListView)view.findViewById(R.id.lvList);
 
-        /*  bt.setOnClickListener(new OnClickListener() {
+        String pages = String.valueOf(page);
+        Map<String,String> map = new HashMap<String, String>();
+        map.put("page",pages);
+        String select = String.format(getString(R.string.baseURL));
+        String url = select+"activity/historyActivity";
+        Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+            @Override
+            public void onSuccess(ResponceSign responceSign)  {
+                //需要解析的活动键值对  key 为活动序号
+                String responseAc = responceSign.activities;
+                mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),3,"tb_activityJSON","activityJSON",responseAc);
+            }
 
             @Override
-            public void onClick(View v) {
-
+            public void onFailure() {
 
             }
-        });*/
+        });
+        //测试取数据
+        try {
+            String s = mySQLiteOpenHelper.queryData("tb_activityJSON", "activityJSON", "_id=3");
+            Log.i("测试读数据", s);
+            JSONObject json = JSON.parseObject(s);
+            JSONObject valueCurrent = new JSONObject();
+            for (Map.Entry<String, Object> entry : json.entrySet()) {
+                //给实体类赋值
+                Activity al = new Activity();
+                //设置活动ID
+                al.setActivityId(entry.getKey());
+                //将字符串转化为JSON对象
+                valueCurrent = JSON.parseObject(entry.getValue().toString());
+                //设置要展示的活动属性
+                al.setActivityName("活动名称：" + valueCurrent.get("activity_name"));
+                al.setStartDate("活动时间：" + valueCurrent.get("activity_time"));
+                al.setActivityType("活动类型：" + valueCurrent.get("activity_type"));
+                al.setNumMax("最大人数：" + valueCurrent.get("limit_num"));
+                activity.add(al);
+            }
+        }catch (NullPointerException e){
+            Log.i("NullPointerException","NullPointerException");
+        }
 
         adapter = new BaseAdapter() {
             @Override
             public int getCount() {
                 // TODO Auto-generated method stub
-                return activityList.size();//数目
+                return activity.size();//数目
             }
 
             @Override
@@ -76,13 +106,19 @@ public class HistoryFragment extends Fragment implements View.OnClickListener{
                     view = inflater.inflate(R.layout.item_myactivity, null);
                 }else{
                     view=convertView;
-                    Log.i("info","有缓存，不需要重新生成"+position);
+                    //Log.i("info","有缓存，不需要重新生成"+position);
                 }
                 final TextView tv1 = (TextView) view.findViewById(R.id.itemname);//itemname
-                tv1.setText(activityList.get(position).getActivityName());//设置参数
+                tv1.setText(activity.get(position).getActivityName());//设置参数
 
-                final TextView tv2 = (TextView) view.findViewById(R.id.itemage);//itemage
-                tv2.setText(activityList.get(position).getStartDate());//设置参数
+                final TextView tv2 = (TextView) view.findViewById(R.id.itemtime);//itemage
+                tv2.setText(activity.get(position).getStartDate());//设置参数
+
+                final TextView tv3 = (TextView) view.findViewById(R.id.itemmax);//itemname
+                tv3.setText(activity.get(position).getNumMax());//设置参数
+
+                final TextView tv4 = (TextView) view.findViewById(R.id.itemtype);//itemage
+                tv4.setText(activity.get(position).getActivityType());//设置参数
                 return view;
             }
             @Override

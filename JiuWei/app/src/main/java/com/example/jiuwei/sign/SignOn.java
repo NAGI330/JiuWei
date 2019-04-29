@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.jiuwei.R;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.sign.ResponceSign;
+import com.example.jiuwei.http.bean.ResponceSign;
 
 import java.util.HashMap;
 import java.util.Map;

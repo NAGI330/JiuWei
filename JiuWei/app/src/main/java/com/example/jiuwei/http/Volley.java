@@ -5,7 +5,7 @@ package com.example.jiuwei.http;
 public class Volley {
     //请求信息，返回信息
     public static<T,M> void sendJSONRequest(T requestInfo, String url, Class<M> responce,
-                                            IDataListener<M> dataListener)
+                                             IDataListener<M> dataListener)
     {
         IHttpService httpService = new JsonHttpService();
         IHttpListener httpListener = new JsonHttpListener<>(responce,dataListener);
@@ -13,4 +13,8 @@ public class Volley {
         ThreadPoolManager.getOurInstance().execute(httpTask);
 
     }
+
+
+
+
 }

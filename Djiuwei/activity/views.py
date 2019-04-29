@@ -89,5 +89,29 @@ class MyActivity(View):
     """我的活动视图"""
 
     def post(self, request):
-        return JsonResponse({"myActivity": 1})
+        #return JsonResponse({"activities": "abc"})
+        return JsonResponse({"activities":{"5":{"activity_name":"天气真好","activity_time":"2018-09-26","activity_type":"唱歌","limit_num":"4"},
+                                           "6":{"activity_name":"天气一般","activity_time":"2018-03-23","activity_type":"逛街","limit_num":"3"},
+                                           "7":{"activity_name":"天气很差","activity_time":"2019-01-26","activity_type":"吃饭","limit_num":"9"},
+                                           "3":{"activity_name":"出去玩吧","activity_time":"2019-04-11","activity_type":"爬山","limit_num":"6"}} })
+
+class HistoryActivity(View):
+    """我的活动视图"""
+
+    def post(self, request):
+        #return JsonResponse({"activities": "abc"})
+        return JsonResponse({"activities":{"35":{"activity_name":"每日坚果","activity_time":"2018-04-26","activity_type":"唱歌","limit_num":"4"},
+                                           "46":{"activity_name":"特仑苏","activity_time":"2018-04-06","activity_type":"唱歌","limit_num":"3"},
+                                           "72":{"activity_name":"羊肉泡馍","activity_time":"2017-02-26","activity_type":"唱歌","limit_num":"9"},
+                                           "33":{"activity_name":"活动名","activity_time":"2014-03-11","activity_type":"唱歌","limit_num":"6"}} })
+
+class ToJoinActivity(View):
+    """我的活动视图"""
+
+    def post(self, request):
+        #return JsonResponse({"activities": "abc"})
+        return JsonResponse({"activities":{"21":{"activity_name":"春","activity_time":"2018-12-26","activity_type":"跑步","limit_num":"14"},
+                                           "22":{"activity_name":"夏","activity_time":"2018-08-06","activity_type":"跑步","limit_num":"13"},
+                                           "23":{"activity_name":"秋","activity_time":"2017-04-26","activity_type":"跑步","limit_num":"19"},
+                                           "24":{"activity_name":"冬","activity_time":"2019-11-11","activity_type":"跑步","limit_num":"16"}} })
 
