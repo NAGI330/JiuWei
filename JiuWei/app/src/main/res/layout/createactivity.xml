@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView   xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:scrollbars="none"
+    >
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
     <TextView
         android:layout_width="match_parent"
@@ -22,7 +28,7 @@
             android:id="@+id/share_ll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#ffffff"
+            android:background="@mipmap/tegami"
             android:orientation="horizontal"
             android:paddingLeft="10dp"
             android:paddingTop="10dp"
@@ -35,7 +41,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20sp"
                 android:layout_marginRight="20sp"
-                android:background="#ffffff"
+                android:background="@mipmap/tegami"
                 android:orientation="vertical"
                 android:stretchColumns="1">
 
@@ -46,7 +52,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/line"
-                        android:background="#ffffff"
                         android:gravity="center"
                         android:text="取消"
                         android:textSize="18sp" />
@@ -64,7 +69,6 @@
                         android:id="@+id/releaseActivity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="#ffffff"
                         android:text="发布"
                         android:textColor="#153ACF"
                         android:textSize="18sp" />
@@ -92,6 +96,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="活动名称"
+                        android:textColor="#000000"
                         android:textSize="18sp" />
 
                     <EditText
@@ -121,6 +126,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="活动描述"
+                        android:textColor="#000000"
                         android:textSize="18sp" />
 
                     <EditText
@@ -149,10 +155,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="活动地点"
+                        android:textColor="#000000"
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/activitySpace"
+                        android:id="@+id/activityPlace"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10sp"
@@ -180,6 +187,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="活动时间"
+                        android:textColor="#000000"
                         android:textSize="18sp" />
 
                     <TextView
@@ -211,6 +219,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="最大人数"
+                        android:textColor="#000000"
                         android:textSize="18sp" />
 
                     <EditText
@@ -236,6 +245,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="活动类型"
+                        android:textColor="#000000"
                         android:textSize="18sp" />
                     <Spinner
                         android:layout_width="match_parent"
@@ -267,3 +277,4 @@
 
     </LinearLayout>
 </RelativeLayout>
+</ScrollView>

@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -40,7 +41,7 @@ import com.example.jiuwei.push.Push_Fragment;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private RadioGroup radioGroup;
     private RadioButton radio_home, radio_friend, radio_myac, radio_msg;
-    private RadioButton radio_plus;
+    private Button plusBtn;
     private RadioButton radio_me;
     //hide_show方法使用
     private Fragment currentFragment;
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //找到按钮
         radio_home = (RadioButton) findViewById(R.id.btnPush);
         radio_friend = (RadioButton) findViewById(R.id.btnFriend);
-        radio_plus = (RadioButton) findViewById(R.id.btnCreateActivity);
+        plusBtn = (Button) findViewById(R.id.btnCreateActivity);
         radio_myac = (RadioButton) findViewById(R.id.btnMyActivity);
         radio_msg = (RadioButton) findViewById(R.id.btnMsg);
         radio_me = (RadioButton) findViewById(R.id.btnPersonalInfo);
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //设置按钮点击监听
         radio_home.setOnClickListener(this);
         radio_friend.setOnClickListener(this);
-        radio_plus.setOnClickListener(this);
+        plusBtn.setOnClickListener(this);
         radio_myac.setOnClickListener(this);
         radio_msg.setOnClickListener(this);
         radio_me.setOnClickListener(this);

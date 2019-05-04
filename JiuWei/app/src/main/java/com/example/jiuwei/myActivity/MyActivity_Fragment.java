@@ -61,7 +61,7 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
         tab_ToJoin=myacTabLayout.getTabAt(1);
         tab_History=myacTabLayout.getTabAt(2);
         //初始化第一个
-        myacViewPager.setCurrentItem(0);
+        myacViewPager.setCurrentItem(1);
 
         setIndicator(myacTabLayout, 10, 10);
 

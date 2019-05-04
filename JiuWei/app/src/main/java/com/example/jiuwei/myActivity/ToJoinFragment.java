@@ -1,12 +1,18 @@
 package com.example.jiuwei.myActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,13 +35,37 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
     public int page =1;
     private View view;
     private MySQLiteOpenHelper mySQLiteOpenHelper;
+    final List<Activity> activity = new ArrayList<Activity>();//实体类
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //View view=inflater.inflate(R.layout.fragment_history,container,false);
-        view=inflater.inflate(R.layout.fragment_mine,container,false);
+        view=inflater.inflate(R.layout.fragment_myactivity_activitylist,container,false);
         initView(view);
         return view;
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.intent.action.CART_BROADCAST");
+        BroadcastReceiver mItemViewListClickReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent){
+                String msgR = intent.getStringExtra("data");
+                if("refresh".equals(msgR)){
+                    refresh();
+                }
+            }
+        };
+        broadcastManager.registerReceiver(mItemViewListClickReceiver, intentFilter);
+    }
+
+    private void refresh() {
+        //getActivity().onAttachFragment(this);
+        initData();
+
     }
 
 
@@ -44,8 +74,21 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
         //实例化 （，数据库名称，工厂，版本号）
         mySQLiteOpenHelper = new MySQLiteOpenHelper(this.getActivity(), "db_jiuwei", null, 1);
         BaseAdapter adapter;//要实现的类
-        final List<Activity> activity = new ArrayList<Activity>();//实体类
         lv = (ListView)view.findViewById(R.id.lvList);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                Log.i("项目序号",position+"  "+id);
+                Intent intent = new Intent(ToJoinFragment.this.getActivity(),Activity_detailedInformation.class);
+                //告诉它 这是哪个Fragment传过来的
+                intent.putExtra("whichFragment", "ToJoin");
+                //将点击项目的活动ID作为变量传给打开的activity
+                intent.putExtra("ToJoinAcId", activity.get(position).getActivityId());
+                startActivity(intent);
+            }
+        });
+
 
         String pages = String.valueOf(page);
         Map<String,String> map = new HashMap<String, String>();
@@ -57,8 +100,13 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
             public void onSuccess(ResponceSign responceSign)  {
                 //需要解析的活动键值对  key 为活动序号
                 String responseAc = responceSign.activities;
+                JSONObject json = JSON.parseObject(responseAc);
+                for (Map.Entry<String, Object> entry : json.entrySet()) {
+                    mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
+                            entry.getKey(),"tb_activityToJoin","activityToJoin",
+                            entry.getValue().toString());
 
-                mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),2,"tb_activityJSON","activityJSON",responseAc);
+                }
             }
 
             @Override
@@ -66,31 +114,8 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
 
             }
         });
-        //测试取数据
-        try {
-            String s = mySQLiteOpenHelper.queryData("tb_activityJSON", "activityJSON", "_id=2");
-            Log.i("测试读数据", s);
-            JSONObject json = JSON.parseObject(s);
-            JSONObject valueCurrent = new JSONObject();
-            for (Map.Entry<String, Object> entry : json.entrySet()) {
-                //给实体类赋值
-                Activity al = new Activity();
-                //设置活动ID
-                al.setActivityId(entry.getKey());
-                //将字符串转化为JSON对象
-                valueCurrent = JSON.parseObject(entry.getValue().toString());
-                //设置要展示的活动属性
-                al.setActivityName("活动名称：" + valueCurrent.get("activity_name"));
-                al.setStartDate("活动时间：" + valueCurrent.get("activity_time"));
-                al.setActivityType("活动类型：" + valueCurrent.get("activity_type"));
-                al.setNumMax("最大人数：" + valueCurrent.get("limit_num"));
-                activity.add(al);
-            }
-        }catch (NullPointerException e){
-            Log.i("NullPointerException","NullPointerException");
-        }
 
-
+        initData();
         adapter = new BaseAdapter() {
             @Override
             public int getCount() {
@@ -116,11 +141,8 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
                 final TextView tv2 = (TextView) view.findViewById(R.id.itemtime);//itemage
                 tv2.setText(activity.get(position).getStartDate());//设置参数
 
-                final TextView tv3 = (TextView) view.findViewById(R.id.itemmax);//itemname
-                tv3.setText(activity.get(position).getNumMax());//设置参数
-
-                final TextView tv4 = (TextView) view.findViewById(R.id.itemtype);//itemage
-                tv4.setText(activity.get(position).getActivityType());//设置参数
+                final TextView tv3 = (TextView) view.findViewById(R.id.itemtype);//itemage
+                tv3.setText(activity.get(position).getActivityType());//设置参数
                 return view;
             }
             @Override
@@ -137,7 +159,36 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    public void initData(){
+        //NullPointerException
+        try {
+            //测试取数据
+            //查询tb_activityMine表中，所有的活动ID
+            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityToJoin", "_id");
+            int i = 0;
+            for (i = 0; i < id_list.length; i++) {
+                //依次从依据活动id从Mine表中中查询存储的JSON字符串
+                String acJSON = mySQLiteOpenHelper.queryData("tb_activityToJoin",
+                        "activityToJoin","_id="+id_list[i]);
+                Log.i("aaaaaaaaaaaa",acJSON);
+                JSONObject json = JSON.parseObject(acJSON);
+                //给实体类赋值
+                Activity al = new Activity();
+                //设置活动ID
+                al.setActivityId(id_list[i]);
+                //将字符串转化为JSON对象
+                //设置要展示的活动属性
+                al.setActivityName("" + json.get("activity_name"));
+                al.setStartDate("" + json.get("activity_time").toString()
+                        .replace("T"," ").replace("Z",""));
+                al.setActivityType("" + json.get("activity_type"));
+                activity.add(al);
 
+            }
+
+        }catch(NullPointerException e){
+        }
+    }
     @Override
     public void onClick(View v) {
 

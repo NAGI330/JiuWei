@@ -11,7 +11,9 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String name = "db_jiuwei"; //数据库名称
     final String CREATE_TABLE_USER_COOKIE="create table tb_userCookie(_id integer primary key autoincrement,cookie)";
-    final String CREATE_TABLE_ACTIVITY_JSON="create table tb_activityJSON(_id integer primary key autoincrement,activityJSON)";
+    final String CREATE_TABLE_ACTIVITY_Mine="create table tb_activityMine(_id integer primary key autoincrement,activityMine)";
+    final String CREATE_TABLE_ACTIVITY_ToJoin="create table tb_activityToJoin(_id integer primary key autoincrement,activityToJoin)";
+    final String CREATE_TABLE_ACTIVITY_History="create table tb_activityHistory(_id integer primary key autoincrement,activityHistory)";
     private static final int version = 1; //数据库版本
     public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
 
@@ -28,7 +30,9 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         db.execSQL(CREATE_TABLE_USER_COOKIE);
-        db.execSQL(CREATE_TABLE_ACTIVITY_JSON);
+        db.execSQL(CREATE_TABLE_ACTIVITY_Mine);
+        db.execSQL(CREATE_TABLE_ACTIVITY_ToJoin);
+        db.execSQL(CREATE_TABLE_ACTIVITY_History);
 
 
     }
@@ -41,7 +45,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     //插入数据的方法
-    public void insertData(SQLiteDatabase sqLiteDatabase,int id, String tables,String dataname,String data){
+    public void insertData(SQLiteDatabase sqLiteDatabase,String id, String tables,String dataname,String data){
         Log.i("调用插入数据方法了",tables+","+dataname+","+data);
         ContentValues values=new ContentValues();
         values.put("_id",id);
@@ -53,6 +57,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     //查询数据的方法
     public String queryData(String tables,String dataname,String selecion){
+        Log.i("调用查询数据方法了",tables+" "+dataname+" "+selecion);
         SQLiteDatabase db = getReadableDatabase();
         String data =null;
         //创建游标对象
@@ -60,6 +65,23 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         //利用游标遍历所有数据对象
         while(cursor.moveToNext()){
             data = cursor.getString(cursor.getColumnIndex(dataname));
+        }
+        return data;
+    }
+    //查询数据某一字段所有数据的方法
+    public String[] queryDataALL(String tables,String id){
+        SQLiteDatabase db = getReadableDatabase();
+        String data[] = new String[40];
+        //创建游标对象
+        Cursor cursor = db.query(tables, new String[]{id}, null, null, null, null, null);
+        //利用游标遍历所有数据对象
+        int i=0;
+       // Log.i("while前",cursor.getString(cursor.getColumnIndex(id)));
+        while(cursor.moveToNext()){
+            data[i] = cursor.getString(cursor.getColumnIndex(id));
+            Log.i("queryDataALL",data[i]);
+            i++;
+
         }
         return data;
     }
