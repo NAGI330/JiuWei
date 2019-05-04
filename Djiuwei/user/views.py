@@ -8,8 +8,13 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
 from django.conf import settings
 from django.contrib.auth import authenticate
+<<<<<<< HEAD
 # from celery_tasks.tasks import send_register_active_email
+=======
+#from celery_tasks.tasks import send_register_active_email
+>>>>>>> 2d6321272b79672f73e6648bae4a122faf7b46cd
 from utils.user_status import signIn
+from django_redis import get_redis_connection
 
 # Create your views here.
 
@@ -52,6 +57,12 @@ class SignOnView(View):
 		# 邮件信息
 		# send_register_active_email.delay(email, username, token)
 		# 发送激活邮件(为测试使用先阻塞处理)
+<<<<<<< HEAD
+=======
+
+		#send_register_active_email.delay(email, username, token)
+
+>>>>>>> 2d6321272b79672f73e6648bae4a122faf7b46cd
 		subject = "久违欢迎你!!!"
 		message = ""
 		sender = settings.EMAIL_HOST_USER
@@ -84,38 +95,41 @@ class ActiveView(View):
 
 
 class SignInView(View):
-	"""登录视图"""
-	def post(self, request):
-		"""登录校验"""
-		# 1.请求数据校验
-		try:
-			request_msg = json.loads(request.body)
-			if not isinstance(request_msg, dict):
-				return JsonResponse({"msg": "typeErr_dict"})
-		except Exception as e:
-			print(e)
-			request_msg = {}
+    """登录视图"""
 
-		# 2.接受数据
-		username = request_msg.get("username", "")
-		password = request_msg.get("password", "")
+    def post(self, request):
+        """登录校验"""
+        # 1.请求数据校验
+        try:
+            request_msg = json.loads(request.body)
+            if not isinstance(request_msg, dict):
+                return JsonResponse({"msg": "typeErr_dict"})
+        except Exception as e:
+            print(e)
+            request_msg = {}
 
-		# 3.校验数据
-		if not all([username, password]):
-			return JsonResponse({"msg": "fieldErr_lose"})
+        # 2.接受数据
+        username = request_msg.get("username", "")
+        password = request_msg.get("password", "")
 
-		# 4.登录验证
-		user = authenticate(username=username, password=password)
-		if user is not None:
-			if user.is_active:
-				# 用户id存入session
-				session_id = signIn(user)
-				cookie = {"session_id": session_id}
-				return JsonResponse({"msg": "signIn successfully", "Cookie": cookie})
-			else:
-				return JsonResponse({"msg": "userErr_notActive"})
-		else:
-			return JsonResponse({"msg": "userErr_notExist"})
+        # 3.校验数据
+        if not all([username, password]):
+            return JsonResponse({"msg": "fieldErr_lose"})
+
+        # 4.登录验证
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                # 用户id存入session
+                conn = get_redis_connection("default")
+                conn.set("user{}".format(user.id), user.get_session_auth_hash())
+                cookie = dict()
+                cookie["session_id"] = conn.get("user{}".format(user.id)).decode()
+                return JsonResponse({"msg": "signIn successfully", "Cookie": cookie})
+            else:
+                return JsonResponse({"msg": "userErr_notActive"})
+        else:
+            return JsonResponse({"msg": "userErr_notExist"})
 
 
 class ChangeMsg(View):

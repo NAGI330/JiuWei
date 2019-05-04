@@ -17,10 +17,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.jiuwei.MainActivity;
 import com.example.jiuwei.R;
-import com.example.jiuwei.http.GetCookie;
+import com.example.jiuwei.LocalSQLite.MySQLiteOpenHelper;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.sign.ResponceSign;
+import com.example.jiuwei.http.bean.ResponceSign;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,15 +33,17 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     //实例化
     Button btnLogin = null;
     TextView tvSignup = null;
+    TextView tvFindPwd = null;
     EditText etNameText = null;
     EditText etPasswordText = null;
+
 
     private static Context mContext;
     public static Context getmContext(){
         return mContext;
     }
 
-    private GetCookie getCookie;
+    private MySQLiteOpenHelper mySQLiteOpenHelper;
     //private String baseURL = "http://127.0.0.1:8000/";
     //private String baseURL = "http://10.0.2.2:8000/";
     @Override
@@ -51,16 +53,18 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.sign_in);
 
         //实例化 （，数据库名称，工厂，版本号）
-        getCookie = new GetCookie(SignIn.this, "db_userCookie", null, 1);
+        mySQLiteOpenHelper = new MySQLiteOpenHelper(SignIn.this, "db_jiuwei", null, 1);
         //绑定
         btnLogin =(Button) findViewById(R.id.login);
         tvSignup = (TextView) findViewById(R.id.signup);
         etNameText = (EditText) findViewById(R.id.username);
         etPasswordText = (EditText) findViewById(R.id.userpassword);
+        tvFindPwd =(TextView) findViewById(R.id.findpwd);
 
 
         btnLogin.setOnClickListener(SignIn.this);
         tvSignup.setOnClickListener(SignIn.this);
+        tvFindPwd.setOnClickListener(SignIn.this);
 
 
 
@@ -80,7 +84,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    String url1 = "http://10.0.2.2:8000/personal/SignIn";
+                    String select = String.format(getString(R.string.baseURL));
+                    String url1 = select+"personal/SignIn";
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
                     map.put("password",password);
@@ -92,6 +97,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             url1, ResponceSign.class, new IDataListener<ResponceSign>() {
                         @Override
                         public void onSuccess(ResponceSign responceSign) {
+                            Log.i("tostring",responceSign.toString());
                             String response = responceSign.msg;
                             if (response.equals("userErr_notExist")) {
                                 showDialog("用户不存在，或密码错误");
@@ -101,16 +107,17 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                 String cookie_value = json.get("session_id").toString();
                                 Log.i("nihao",cookie_value);
                                 //将cookie存入数据库
-                                getCookie.insertData(getCookie.getReadableDatabase(),1,cookie_value);
+                                mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),1,
+                                        "tb_userCookie","cookie",cookie_value);
                                 //测试取数据
-                                Log.i("测试读数据","abcd");
-                                String cookie = getCookie.queryData();
+                                String cookie = mySQLiteOpenHelper.queryData("tb_userCookie","cookie","_id=1");
                                 Log.i("测试读数据",cookie);
                                 Intent intent = new Intent(SignIn.this,
                                         MainActivity.class);
                                 startActivity(intent);
                                 Log.i("signin",responceSign.msg);
                                 Log.i("signin",responceSign.cookie);
+
 
                             } else if (response.equals("userErr_notActive")) {
                                 showDialog("请先激活邮箱");
@@ -130,6 +137,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 Intent intent = new Intent(SignIn.this,
                         SignOn.class);
                 startActivity(intent);
+                break;
+            case R.id.findpwd:
                 break;
         }
 

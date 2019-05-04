@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.jiuwei.LocalSQLite.MySQLiteOpenHelper;
 import com.example.jiuwei.R;
-
 import com.example.jiuwei.adapter.MyActivityAdapter;
 
 
@@ -22,6 +24,12 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
     TabLayout myacTabLayout;
     ViewPager myacViewPager;
     private TabLayout.Tab tab_Mine,tab_ToJoin,tab_History;
+    private MyActivityAdapter myActivityAdapter;
+    TextView morePTv;
+    HistoryFragment historyFragment =new HistoryFragment();
+    ToJoinFragment toJoinFragment = new ToJoinFragment();
+    MineFragment mineFragment = new MineFragment();
+    MySQLiteOpenHelper mySQLiteOpenHelper;
 
 
 
@@ -40,11 +48,12 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
     private void initView(View view) {
         myacTabLayout= (TabLayout) view.findViewById(R.id.tabLayout_home_fragment);
         myacViewPager= (ViewPager) view.findViewById(R.id.viewPager_home_fragment);
+        morePTv = (TextView) view.findViewById(R.id.morePage);
+        morePTv.setOnClickListener(this);
         //getSupportFragmentManager()方法在Activity中使用
-        //        嵌套Fragment拿到FragmentManager要用这个方法 getChildFragmentManager()
-
-        myacViewPager.setAdapter(new MyActivityAdapter(getChildFragmentManager()));
-
+        //嵌套Fragment拿到FragmentManager要用这个方法 getChildFragmentManager()
+        myActivityAdapter =new MyActivityAdapter(getChildFragmentManager());
+        myacViewPager.setAdapter(myActivityAdapter);
         myacTabLayout.setupWithViewPager(myacViewPager);
         //初始化tab
         //tab_Mine,tab_ToJoin,tab_History;
@@ -52,29 +61,30 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
         tab_ToJoin=myacTabLayout.getTabAt(1);
         tab_History=myacTabLayout.getTabAt(2);
         //初始化第一个
-        //myacViewPager.setCurrentItem(0);
+        myacViewPager.setCurrentItem(0);
 
         setIndicator(myacTabLayout, 10, 10);
 
 
-
     }
+
     private void initEvents(View view) {
         myacTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 // if (tab == myacTabLayout.getTabAt(0)) {
+
                 if (tab == tab_Mine) {
-                    //myacViewPager.setCurrentItem(0);
+                    myacViewPager.setCurrentItem(0);
                     Log.d("tag", "进入数字0了");
                     // } else if (tab == myacTabLayout.getTabAt(1)) {
                 } else if (tab == tab_ToJoin) {
-                    //myacViewPager.setCurrentItem(1);
+                    myacViewPager.setCurrentItem(1);
                     Log.d("tag", "进入数字1了");
                     //} else if (tab == myacTabLayout.getTabAt(2)) {
                 } else if (tab == tab_History) {
-                    //myacViewPager.setCurrentItem(2);
+                    myacViewPager.setCurrentItem(2);
                     Log.d("tag", "进入数字2了");
                 }
 
@@ -104,11 +114,35 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
 
             }
         });
+
     }
 
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            //加载更多活动
+            case R.id.morePage:
+                //我发起的
+                if (myacViewPager.getCurrentItem()==0){
+                    mineFragment.page++;
+                    Toast.makeText(this.getActivity(),""+mineFragment.page, Toast.LENGTH_SHORT).show();
+                    //mineFragment.getActivityList(mineFragment.page);
+                }
+                //待参加的
+                else if (myacViewPager.getCurrentItem()==1){
+                    toJoinFragment.page++;
+                    Toast.makeText(this.getActivity(),""+toJoinFragment.page, Toast.LENGTH_SHORT).show();
+                    //toJoinFragment.getActivityList(toJoinFragment.page);
+                }
+                //历史活动
+                else if (myacViewPager.getCurrentItem()==2){
+                    historyFragment.page++;
+                    Toast.makeText(this.getActivity(),""+historyFragment.page, Toast.LENGTH_SHORT).show();
+                    //historyFragment.getActivityList(historyFragment.page);
+                }
+                break;
+        }
 
 
     }

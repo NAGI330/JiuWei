@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,7 +16,7 @@ import android.widget.Toast;
 import com.example.jiuwei.R;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.sign.ResponceSign;
+import com.example.jiuwei.http.bean.ResponceSign;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +118,9 @@ public class SignOn extends AppCompatActivity implements View.OnClickListener {
                     showDialog("请阅读用户手册");
                 }
                 else{
-                    String url1 = "http://10.0.2.2:8000/personal/SignOn";
+                    String select = String.format(getString(R.string.baseURL));
+                    String url1 = select+"personal/SignOn";
+                    Log.i("tg",url1);
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("username",name);
                     map.put("password",password);

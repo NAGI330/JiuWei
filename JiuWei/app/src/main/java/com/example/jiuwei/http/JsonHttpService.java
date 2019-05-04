@@ -3,6 +3,7 @@ package com.example.jiuwei.http;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.jiuwei.LocalSQLite.MySQLiteOpenHelper;
 import com.example.jiuwei.sign.SignIn;
 
 import java.io.BufferedOutputStream;
@@ -18,9 +19,8 @@ public class JsonHttpService implements IHttpService{
     //获取context!!!!!
     SignIn signIn;
     Context context =signIn.getmContext();
-    GetCookie getCookie = new GetCookie(context, "db_userCookie", null, 1);
-    String cookie = "session_id="+getCookie.queryData();
-
+    MySQLiteOpenHelper mySQLiteOpenHelper = new MySQLiteOpenHelper(context, "db_jiuwei", null, 1);
+    String cookie = "session_id="+ mySQLiteOpenHelper.queryData("tb_userCookie","cookie","_id=1");
     @Override
     public void setUrl(String url) {
         this.url = url;
@@ -61,7 +61,6 @@ public class JsonHttpService implements IHttpService{
             //设置请求的方式
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-            urlConnection.setRequestProperty("csrf-token","AL9VLCPiysJ56dnfcjmsO4M98WZuVSRrhHWGjJINT8ihHOJIv9BqXKv5UcLJJtDm");
             urlConnection.setRequestProperty("Cookie", cookie);
             Log.i("HTTP",cookie);
             urlConnection.connect();

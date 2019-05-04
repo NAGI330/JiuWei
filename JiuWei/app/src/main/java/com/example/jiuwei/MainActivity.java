@@ -1,7 +1,6 @@
 package com.example.jiuwei;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
@@ -21,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -40,13 +37,10 @@ import com.example.jiuwei.personalInfo.UserMenu_Fragment;
 import com.example.jiuwei.personalInfo.UserMsg;
 import com.example.jiuwei.push.Push_Fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private RadioGroup radioGroup;
     private RadioButton radio_home, radio_friend, radio_myac, radio_msg;
-    private ImageView radio_plus;
+    private RadioButton radio_plus;
     private RadioButton radio_me;
     //hide_show方法使用
     private Fragment currentFragment;
@@ -58,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Fragment fragment_msg;
     private Fragment fragment_userMenu;
     private TextView textView;
-    private List<Fragment> list;
     private FrameLayout frameLayout1;
     private FrameLayout frameLayout2;
 
@@ -120,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //找到按钮
         radio_home = (RadioButton) findViewById(R.id.btnPush);
         radio_friend = (RadioButton) findViewById(R.id.btnFriend);
-        radio_plus = (ImageView) findViewById(R.id.btnCreateActivity);
+        radio_plus = (RadioButton) findViewById(R.id.btnCreateActivity);
         radio_myac = (RadioButton) findViewById(R.id.btnMyActivity);
         radio_msg = (RadioButton) findViewById(R.id.btnMsg);
         radio_me = (RadioButton) findViewById(R.id.btnPersonalInfo);
@@ -137,13 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         //将Fragment对象添加到list中
-        list = new ArrayList<>();
-        list.add(fragment_push);
-        list.add(fragment_friend);
-        list.add(fragment_createActivity);
-        list.add(fragment_myActivity);
-        list.add(fragment_msg);
-        list.add(fragment_userMenu);
+
 
         //设置RadioGroup开始时设置的按钮，设置第一个按钮为默认值
         radioGroup.check(R.id.btnPush);
@@ -248,18 +235,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void showDialog(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(message);
-        builder.setPositiveButton("确定",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
 
 
     //向Activity中添加Fragment的方法

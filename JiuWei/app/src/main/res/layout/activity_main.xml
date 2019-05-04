@@ -40,7 +40,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:paddingLeft="0dp"
-                android:textSize="12sp"
+                android:textSize="18sp"
                 android:text="活动推送"/>
             <RadioButton
                 android:id="@+id/btnOther"
@@ -105,17 +105,16 @@
 
             <!--</LinearLayout>-->
             <!--给中间凸起按钮预留位置-->
-            <LinearLayout
+            <RadioButton
+                android:id="@+id/btnCreateActivity"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center">
-            </LinearLayout>
-            <!--<LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:background="@mipmap/createactivity_true"
+                android:button="@null"
                 android:gravity="center"
-                android:layout_weight="1">-->
+                android:paddingLeft="0dp"
+                android:textSize="12sp"/>
             <RadioButton
                 android:id="@+id/btnMyActivity"
                 android:layout_width="0dp"
@@ -136,27 +135,12 @@
                 android:button="@null"
                 android:gravity="center"
                 android:paddingLeft="0dp"
-
                 android:textSize="12sp"/>
+
 
             <!-- </LinearLayout>-->
         </RadioGroup>
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_above="@id/radioGroup"-->
-        <!--&gt;-->
-        <!--</LinearLayout>-->
-        <ImageView
-            android:id="@+id/btnCreateActivity"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="-65dp"
-            android:layout_above="@id/radioGroup"
-            android:background="@drawable/icon_createactivity"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
-            android:layout_centerHorizontal="true" />
+
     </LinearLayout>
     <ListView android:id="@+id/left_drawer"
         android:layout_width="250dp"
