@@ -8,7 +8,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
 from django.conf import settings
 from django.contrib.auth import authenticate
-from celery_tasks.tasks import send_register_active_email
+# from celery_tasks.tasks import send_register_active_email
 from utils.user_status import signIn
 
 # Create your views here.
@@ -50,14 +50,14 @@ class SignOnView(View):
 		token = token.decode("utf-8")
 		
 		# 邮件信息
+		# send_register_active_email.delay(email, username, token)
 		# 发送激活邮件(为测试使用先阻塞处理)
-		send_register_active_email.delay(email, username, token)
-		# subject = "久违欢迎你!!!"
-		# message = ""
-		# sender = settings.EMAIL_HOST_USER
-		# receiver = [email]
-		# html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://127.0.0.1:8000/user/Active/{}'>http://127.0.0.1/user/Active/{}</a>".format(username, token, token)
-		# send_mail(subject, message, sender, receiver, html_message=html_message)
+		subject = "久违欢迎你!!!"
+		message = ""
+		sender = settings.EMAIL_HOST_USER
+		receiver = [email]
+		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://127.0.0.1:8000/user/Active/{}'>http://127.0.0.1/user/Active/{}</a>".format(username, token, token)
+		send_mail(subject, message, sender, receiver, html_message=html_message)
 
 		return JsonResponse({"msg": "signOn successfully"})
 
@@ -74,6 +74,7 @@ class ActiveView(View):
 			password = info['password']
 			email = info['email']
 			user = User.objects.create_user(username, email, password)
+			user.nickname = "用户" + user.get_session_auth_hash()[:6]
 			user.is_active = 1
 			user.save()
 			return JsonResponse({"msg": "user is active"})
