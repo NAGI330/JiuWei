@@ -92,7 +92,11 @@ DATABASES = {
 CACHES = {
 	'default': {
 		'BACKEND': 'django_redis.cache.RedisCache',
+<<<<<<< HEAD
+		'LOCATION': 'redis://:password@127.0.0.1:6379/2',
+=======
 		'LOCATION': 'redis://:duanchao132456@127.0.0.1:6379/2',
+>>>>>>> 2d6321272b79672f73e6648bae4a122faf7b46cd
 		'OPTIONS': {
 			'CLIENT_CLASS': 'django_redis.client.DefaultClient',
 		}

@@ -9,7 +9,7 @@ conn = get_redis_connection("default")
 def signIn(user):
 	"""保存登录状态"""
 	user_hash = user.get_session_auth_hash()
-	conn.set(user_hash, user.id)
+	conn.set(user_hash, user.id, 60 * 60 * 2)
 	return user_hash
 
 
@@ -22,4 +22,5 @@ def checkStatus(cookie):
 def signOut(user):
 	"""退出登录"""
 	user_hash = user.get_session_auth_hash()
+	conn.delete(user_hash)
 

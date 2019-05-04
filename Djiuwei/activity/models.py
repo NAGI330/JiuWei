@@ -36,7 +36,7 @@ class UserActivityMap(BaseModel):
 		verbose_name_plural = verbose_name
 
 	def __str__(self):
-		return self.user
+		return "{}".format(self.user_id)
 
 
 class Dynamic(BaseModel):

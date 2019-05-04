@@ -8,7 +8,11 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
 from django.conf import settings
 from django.contrib.auth import authenticate
+<<<<<<< HEAD
+# from celery_tasks.tasks import send_register_active_email
+=======
 #from celery_tasks.tasks import send_register_active_email
+>>>>>>> 2d6321272b79672f73e6648bae4a122faf7b46cd
 from utils.user_status import signIn
 from django_redis import get_redis_connection
 
@@ -51,10 +55,14 @@ class SignOnView(View):
 		token = token.decode("utf-8")
 		
 		# 邮件信息
+		# send_register_active_email.delay(email, username, token)
 		# 发送激活邮件(为测试使用先阻塞处理)
+<<<<<<< HEAD
+=======
 
 		#send_register_active_email.delay(email, username, token)
 
+>>>>>>> 2d6321272b79672f73e6648bae4a122faf7b46cd
 		subject = "久违欢迎你!!!"
 		message = ""
 		sender = settings.EMAIL_HOST_USER
@@ -77,6 +85,7 @@ class ActiveView(View):
 			password = info['password']
 			email = info['email']
 			user = User.objects.create_user(username, email, password)
+			user.nickname = "用户" + user.get_session_auth_hash()[:6]
 			user.is_active = 1
 			user.save()
 			return JsonResponse({"msg": "user is active"})
