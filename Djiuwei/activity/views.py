@@ -126,7 +126,7 @@ class ChangeActivity(View):
 		return JsonResponse({"msg": "change activity successfully"})
 
 
-class MyActivity(View):
+class MineActivity(View):
 	"""我的活动视图"""
 	def post(self, request):
 		try:
@@ -142,17 +142,18 @@ class MyActivity(View):
 		user = checkStatus(request.COOKIES)
 		if not isinstance(user, User):
 			return JsonResponse({"msg": "userErr_unsignIn"})
-		object_list = Activity.objects.filter(owner_id=user.id)
+		object_list = Activity.objects.filter(owner_id=user.id).order_by("-activity_time")
 
 		# 将全部结果分页
 		paginator = Paginator(object_list, 4)
 		page = int(request_msg.get("page"))
+		print("page: {}".format(page))
 		try:
 			activities = paginator.page(page)
 		except PageNotAnInteger:
 			activities = paginator.page(1)
 		except EmptyPage:
-			activities = paginator.page(paginator.num_pages)
+			return JsonResponse({"msg": "numErr_Empty"})
 		
 		# response 拼接
 		response = {i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time, "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num, "owner_id": i.owner_id, "owner_name": user.nickname, "participant": []} for i in activities}
@@ -194,6 +195,7 @@ class HistoryActivity(View):
 		# 将全部结果分页
 		paginator = Paginator(object_list, 4)
 		page = int(request_msg.get("page"))
+		print("page: {}".format(page))
 		try:
 			activities = paginator.page(page)
 		except PageNotAnInteger:
@@ -241,12 +243,13 @@ class TojoinActivity(View):
 		# 将全部结果分页
 		paginator = Paginator(object_list, 4)
 		page = int(request_msg.get("page"))
+		print("page: {}".format(page))
 		try:
 			activities = paginator.page(page)
 		except PageNotAnInteger:
 			activities = paginator.page(1)
 		except EmptyPage:
-			activities = paginator.page(paginator.num_pages)
+			return JsonResponse({"msg": "numErr_Empty"})
 		
 		# response 拼接
 		response = {i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time, "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num, "owner_id": i.owner_id, "owner_name": user.nickname, "participant": []} for i in activities}
@@ -291,9 +294,14 @@ class QuitActivity(View):
 			return JsonResponse({"msg": "uamapErr_notExist"})
 		uamap.delete()
 
+		user.credit_score -= 5
 		if user.id != activity.owner_id:
-			return JsonResponse({"msg": "quit successfully"})
+			score = user.credit_score
+			user.save()
+			return JsonResponse({"msg": "quit successfully", "credit_score": score})
 
 		activity.delete()
-		return JsonResponse({"msg": "dissolution successfully"})
+		user.credit_score -= 5
+		score = user.credit_score
+		return JsonResponse({"msg": "dissolution successfully", "credit_score": score})
 
