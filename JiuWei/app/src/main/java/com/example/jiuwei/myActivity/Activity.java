@@ -3,10 +3,45 @@ package com.example.jiuwei.myActivity;
 public class Activity {
     public String activityId;
     public String activityName;
+    public String activityDescribe;
+    public String activityPlace;
     public String startDate;
     public String activityType;
     public String numMax;
+    public String ownId;
+    public String ownName;
 
+    public String getActivityDescribe() {
+        return activityDescribe;
+    }
+
+    public void setActivityDescribe(String activityDescribe) {
+        this.activityDescribe = activityDescribe;
+    }
+
+    public String getActivityPlace() {
+        return activityPlace;
+    }
+
+    public void setActivityPlace(String activityPlace) {
+        this.activityPlace = activityPlace;
+    }
+
+    public String getOwnId() {
+        return ownId;
+    }
+
+    public void setOwnId(String ownId) {
+        this.ownId = ownId;
+    }
+
+    public String getOwnName() {
+        return ownName;
+    }
+
+    public void setOwnName(String ownName) {
+        this.ownName = ownName;
+    }
     public String getActivityId() {
         return activityId;
     }
@@ -52,9 +87,15 @@ public class Activity {
         return "Activity{" +
                 "activityId='" + activityId + '\'' +
                 ", activityName='" + activityName + '\'' +
+                ", activityDescribe='" + activityDescribe + '\'' +
+                ", activityPlace='" + activityPlace + '\'' +
                 ", startDate='" + startDate + '\'' +
                 ", activityType='" + activityType + '\'' +
                 ", numMax='" + numMax + '\'' +
+                ", ownId='" + ownId + '\'' +
+                ", ownName='" + ownName + '\'' +
                 '}';
     }
+
+
 }

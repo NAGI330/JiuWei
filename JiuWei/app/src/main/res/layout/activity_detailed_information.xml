@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+
+    android:focusableInTouchMode="true"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="0dp"
+        android:alpha="0.2" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#6FCDF1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/backtoactivity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/line"
+                android:gravity="left"
+                android:text="   返  回"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="活动详细信息"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/moreOperation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="修改活动"
+                android:visibility="invisible"
+                android:textColor="#153ACF"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#C6EEF5"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="30dp">
+
+
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:stretchColumns="1">
+
+                <TableRow>
+
+
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_weight="1"
+                        android:background="#000000" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView />
+                </TableRow>
+
+
+
+                        <TableRow>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="名称"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                            <EditText
+                                android:id="@+id/activityName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10sp"
+                                android:layout_span="3"
+                                android:layout_weight="1"
+                                android:enabled="false"
+                                android:maxLength="60"
+                                android:paddingTop="10sp"
+                                android:paddingBottom="10sp"
+                                android:saveEnabled="false"
+                                android:textSize="18sp" />
+
+                        </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="活动ID"
+                        android:textColor="#000000"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/activityId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        android:layout_span="3"
+                        android:layout_weight="1"
+                        android:maxLength="60"
+                        android:paddingTop="10sp"
+                        android:paddingBottom="10sp"
+                        android:saveEnabled="false"
+                        android:textSize="18sp" />
+
+                </TableRow>
+
+
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="发起人"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/ownName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10sp"
+                                android:layout_span="3"
+                                android:layout_weight="1"
+                                android:maxLength="60"
+                                android:paddingTop="10sp"
+                                android:paddingBottom="10sp"
+                                android:saveEnabled="false"
+                                android:textSize="18sp" />
+
+                        </TableRow>
+
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="发起人ID"
+                        android:textColor="#000000"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/ownId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        android:layout_span="3"
+                        android:layout_weight="1"
+                        android:maxLength="60"
+                        android:paddingTop="10sp"
+                        android:paddingBottom="10sp"
+                        android:saveEnabled="false"
+                        android:textSize="18sp" />
+
+                </TableRow>
+
+                <TableRow>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:layout_weight="1"
+                        android:background="#00BCD4" />
+
+                </TableRow>
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="描述"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                            <EditText
+                                android:id="@+id/activityDescribe"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:layout_marginLeft="10sp"
+                                android:layout_span="3"
+                                android:enabled="false"
+                                android:layout_weight="1"
+                                android:maxLength="300"
+                                android:paddingTop="10sp"
+                                android:paddingBottom="10sp"
+                                android:textSize="18sp" />
+                        </TableRow>
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="10dp"
+                                android:layout_weight="1"
+                                android:background="#00BCD4" />
+
+                        </TableRow>
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="成员"
+                        android:textColor="#000000"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/activityMember"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        android:layout_span="3"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:paddingTop="10sp"
+                        android:paddingBottom="10sp"
+                        android:text="共1人  >"
+                        android:textSize="18sp" />
+
+                </TableRow>
+                        <TableRow>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="10dp"
+                                android:layout_weight="1"
+                                android:background="#00BCD4" />
+
+                        </TableRow>
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="地点"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/activityPlace"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10sp"
+                                android:layout_span="3"
+                                android:paddingTop="10sp"
+                                android:paddingBottom="10sp"
+                                android:textSize="18sp" />
+                            <Button
+                                android:id="@+id/placeSelect"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:visibility="invisible"
+                                android:text="选择地点" />
+
+                        </TableRow>
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="时间"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/activityTime"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10sp"
+                                android:layout_span="3"
+                                android:paddingTop="10sp"
+                                android:paddingBottom="10sp"
+                                android:textSize="18sp" />
+                            <Button
+                                android:id="@+id/timeSelect"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:visibility="invisible"
+                                android:text="选择时间" />
+                        </TableRow>
+
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="最大人数"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                            <EditText
+                                android:id="@+id/numberMax"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10sp"
+                                android:layout_span="3"
+                                android:layout_weight="1"
+                                android:enabled="false"
+                                android:paddingTop="10sp"
+                                android:paddingBottom="10sp"
+                                android:textSize="18sp" />
+                        </TableRow>
+
+
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="类型"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10sp"
+                                android:id="@+id/activityType"
+                                android:entries="@array/spinnerActivityType"
+                                android:layout_span="3"
+                                android:layout_weight="1"
+                                android:paddingTop="10sp"
+                                android:paddingBottom="10sp"
+                                android:textSize="18sp"
+                                />
+                        </TableRow>
+
+                        <TableRow>
+
+                        </TableRow>
+
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="10dp"
+                                android:layout_weight="1"
+                                android:background="#00BCD4" />
+                        </TableRow>
+                <TableRow>
+                    <TextView />
+                </TableRow>
+                <TableRow>
+                    <Button
+                        android:id="@+id/deleteActivity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_span="3"
+                        android:layout_weight="1"
+                        android:text="退出/解散活动"
+                        android:visibility="invisible"
+                        android:background="@drawable/sign_button_type"
+                        android:textColor="#ff0000"/>
+                </TableRow>
+
+
+
+            </TableLayout>
+
+            </ScrollView>
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

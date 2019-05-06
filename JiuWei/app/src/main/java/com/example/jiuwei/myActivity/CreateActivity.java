@@ -1,6 +1,7 @@
 package com.example.jiuwei.myActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,15 +20,16 @@ import com.example.jiuwei.datetimeselect.DateFormatUtils;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
 import com.example.jiuwei.http.bean.ResponceSign;
+import com.example.jiuwei.mapService.search.BaiduMapMainActivity;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CreateActivity extends AppCompatActivity implements View.OnClickListener {
-    EditText acNameEt = null,acDesEt = null,acSpaceEt = null,numMaxEt = null;
-    TextView  acTimeTv = null;
-    Spinner acTypeSpn=null;
-    String activityType;
+    private EditText acNameEt = null,acDesEt = null,acPlaceEt = null,numMaxEt = null;
+    private TextView  acTimeTv = null;
+    private Spinner acTypeSpn=null;
+    private String activityType;
     private CustomDatePicker mTimerPicker;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,7 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
         TextView canaleTv = (TextView) findViewById(R.id.createCancel);
         acNameEt =(EditText) findViewById(R.id.activityName);
         acDesEt =(EditText) findViewById(R.id.activityDescribe);
-        acSpaceEt =(EditText) findViewById(R.id.activitySpace);
+        acPlaceEt =(EditText) findViewById(R.id.activityPlace);
 
         acTimeTv =(TextView) findViewById(R.id.activityTime);
         initTimerPicker();
@@ -115,7 +117,7 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
         activityType = (String) acTypeSpn.getSelectedItem();
         String activityName =acNameEt.getText().toString();
         String activityDescribe = acDesEt.getText().toString();
-        String activitySpaceSelect = acSpaceEt.getText().toString();
+        String activityPlaceSelect = acPlaceEt.getText().toString();
         String activityTimeSelect = acTimeTv.getText().toString();
         String activityNumMax = numMaxEt.getText().toString();
         //获取选择的活动类型
@@ -139,7 +141,10 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
                 overridePendingTransition(R.anim.pop_enter_anim, R.anim.pop_exit_anim);
                 break;
             case R.id.spaceSelect:
-                acSpaceEt.setText("西安");
+                //acPlaceEt.setText("西安");
+                Intent intent = new Intent(CreateActivity.this,
+                        BaiduMapMainActivity.class);
+                startActivity(intent);
                 break;
             case R.id.timeSelect:
                 mTimerPicker.show(acTimeTv.getText().toString());
@@ -149,13 +154,13 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
                 //对输入进行合法判断
                 if(activityName.equals("")){
                     showDialog("活动名不能为空");
-                    //Toast.makeText(MainActivity.this, "活动名长度需在8~20字之间", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(BaiduMapMainActivity.this, "活动名长度需在8~20字之间", Toast.LENGTH_SHORT).show();
                 }else if(activityDescribe.equals("")){
                     showDialog("活动描述不能为空");
-                    //Toast.makeText(MainActivity.this, "活动描述长度需在20~100个字之间", Toast.LENGTH_SHORT).show();
-                }else if(activitySpaceSelect.equals("")) {
+                    //Toast.makeText(BaiduMapMainActivity.this, "活动描述长度需在20~100个字之间", Toast.LENGTH_SHORT).show();
+                }else if(activityPlaceSelect.equals("")) {
                     showDialog("活动地点不能为空");
-                    //Toast.makeText(MainActivity.this, "活动地点与活动时间不能为空", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(BaiduMapMainActivity.this, "活动地点与活动时间不能为空", Toast.LENGTH_SHORT).show();
                 }else if(activityTimeSelect.equals("")){
                     showDialog("活动时间不能为空");
                 }
@@ -165,7 +170,7 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("activity_name",activityName);
                     map.put("activity_desc",activityDescribe);
-                    map.put("activity_site",activitySpaceSelect);
+                    map.put("activity_site",activityPlaceSelect);
                     map.put("activity_time",activityTimeSelect);
                     map.put("limit_num",activityNumMax);
                     map.put("activity_type",activityType);

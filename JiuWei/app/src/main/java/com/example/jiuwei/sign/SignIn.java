@@ -107,7 +107,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                                 String cookie_value = json.get("session_id").toString();
                                 Log.i("nihao",cookie_value);
                                 //将cookie存入数据库
-                                mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),1,
+                                mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),"1",
                                         "tb_userCookie","cookie",cookie_value);
                                 //测试取数据
                                 String cookie = mySQLiteOpenHelper.queryData("tb_userCookie","cookie","_id=1");

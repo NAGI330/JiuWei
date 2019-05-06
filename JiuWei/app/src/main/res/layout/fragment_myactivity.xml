@@ -10,16 +10,17 @@
         android:id="@+id/tabLayout_home_fragment"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#E6E6E6"
+        android:background="#ffffff"
         app:tabIndicatorHeight="2dp"
-        app:tabSelectedTextColor="#FF9900"
-        app:tabTextColor="#000"
+        app:tabSelectedTextColor="#E91E63"
+        app:tabTextColor="#3500FD"
         app:tabGravity="fill"
         app:tabMaxWidth="0dp"
-        app:tabIndicatorColor="#FF9900"
-
+        app:tabIndicatorColor="#E91E63"
         app:tabMode="fixed"
         android:gravity="center_vertical"
+
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
         >
     </android.support.design.widget.TabLayout>
 
@@ -29,21 +30,29 @@
     <!--app:tabContentStart="100dp"TabLayout开始位置的偏移量：-->
     <!--app:tabGravity="center"//居中，如果是fill，则是充满-->
 
-
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager_home_fragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scrollbars="none">
+
     </android.support.v4.view.ViewPager>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#EEEEEE"/>
     <TextView
         android:id="@+id/morePage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textColor="#000000"
+        android:background="#EEEEEE"
         android:gravity="center"
         android:text="加载更多"/>
+
+
+
 
 </LinearLayout>
