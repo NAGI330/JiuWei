@@ -126,7 +126,7 @@ class ChangeActivity(View):
 		return JsonResponse({"msg": "change activity successfully"})
 
 
-class MyActivity(View):
+class MineActivity(View):
 	"""我的活动视图"""
 	def post(self, request):
 		try:
@@ -152,7 +152,7 @@ class MyActivity(View):
 		except PageNotAnInteger:
 			activities = paginator.page(1)
 		except EmptyPage:
-			activities = paginator.page(paginator.num_pages)
+			return JsonResponse({"msg": "numErr_Empty"})
 		
 		# response 拼接
 		response = {i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time, "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num, "owner_id": i.owner_id, "owner_name": user.nickname, "participant": []} for i in activities}
@@ -164,7 +164,7 @@ class MyActivity(View):
 
 		print("response: {}".format(response))
 		
-		return JsonResponse({"activities": response})
+		return JsonResponse({"activities": response, "msg": "paginatorSuc"})
 
 
 class HistoryActivity(View):
@@ -211,10 +211,10 @@ class HistoryActivity(View):
 		
 		print("response: {}".format(response))
 
-		return JsonResponse({"activities": response})
+		return JsonResponse({"activities": response, "msg": "paginatorSuc"})
 
 
-class TojoinActivity(View):
+class ToJoinActivity(View):
 	"""待参加活动视图"""
 	def post(self, request):
 		try:
@@ -246,7 +246,7 @@ class TojoinActivity(View):
 		except PageNotAnInteger:
 			activities = paginator.page(1)
 		except EmptyPage:
-			activities = paginator.page(paginator.num_pages)
+			return JsonResponse({"msg": "numErr_Empty"})
 		
 		# response 拼接
 		response = {i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time, "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num, "owner_id": i.owner_id, "owner_name": user.nickname, "participant": []} for i in activities}
@@ -258,7 +258,7 @@ class TojoinActivity(View):
 		
 		print("response: {}".format(response))
 
-		return JsonResponse({"activities": response})
+		return JsonResponse({"activities": response, "msg": "paginatorSuc"})
 
 
 class QuitActivity(View):
@@ -289,11 +289,15 @@ class QuitActivity(View):
 			uamap = UserActivityMap.objects.get(user_id=user.id, activity_id=activity.id)
 		except Exception as e:
 			return JsonResponse({"msg": "uamapErr_notExist"})
+		user.credit_score -= 5
+		score = user.credit_score
 		uamap.delete()
 
 		if user.id != activity.owner_id:
-			return JsonResponse({"msg": "quit successfully"})
+			return JsonResponse({"msg": "quit successfully", "score": score})
 
 		activity.delete()
-		return JsonResponse({"msg": "dissolution successfully"})
+		user.credit_score -= 5
+		score = user.credit_score
+		return JsonResponse({"msg": "dissolution successfully", "score": score})
 
