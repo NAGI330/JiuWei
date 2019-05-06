@@ -1,8 +1,10 @@
 package com.example.jiuwei.myActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -105,9 +107,13 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
             acId = getIntent().getStringExtra("MineAcId");
             acJSON = mySQLiteOpenHelper.queryData("tb_activityMine",
                     "activityMine","_id="+acId);
-            deleteAcBtn.setText("解散活动");
-            deleteAcBtn.setVisibility(View.VISIBLE);
-            moreOperation.setVisibility(View.VISIBLE);
+            //活动未过期时，让解散活动和修改活动按钮可见
+            if(getIntent().getStringExtra("acState").equals("true")){
+                deleteAcBtn.setText("解散活动");
+                deleteAcBtn.setVisibility(View.VISIBLE);
+                moreOperation.setVisibility(View.VISIBLE);
+            }
+
 
         }else if(getIntent().getStringExtra("whichFragment").equals("ToJoin")){
             acId = getIntent().getStringExtra("ToJoinAcId");
@@ -169,12 +175,6 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
                             String responseMsg = responceSign.msg;
                             if (responseMsg.equals("change activity successfully")){
                                 Toast.makeText(Activity_detailedInformation.this, "活动修改成功", Toast.LENGTH_SHORT).show();
-//                                moreOperation.setText("修改活动");
-//                                timeSelectBtn.setVisibility(View.INVISIBLE);
-//                                placeSelectBtn.setVisibility(View.INVISIBLE);
-//                                acNameTv.setEnabled(false);
-//                                acDesTv.setEnabled(false);
-//                                numMaxTv.setEnabled(false);
                                 String s="{\"activity_name\":\"" + acNameTv.getText().toString()+"\"," +
                                         "\"activity_desc\":\"" + acDesTv.getText().toString()+"\"," +
                                         "\"activity_site\":\"" + acPlaceTv.getText().toString()+"\"," +
@@ -223,27 +223,96 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
                 acPlaceTv.setText("西安");
                 break;
             case R.id.deleteActivity:
-                String select = String.format(getString(R.string.baseURL));
-                String url = select+"activity/quitActivity";
-                Map<String,String> map = new HashMap<String, String>();
-                map.put("id",acId);
+                if (deleteAcBtn.getText().equals("解散活动")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage("解散活动会扣除10点信用分，确定要解散么？");
+                    builder.setNegativeButton("确定",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    String select = String.format(getString(R.string.baseURL));
+                                    String url = select+"activity/quitActivity";
+                                    Map<String,String> map = new HashMap<String, String>();
+                                    map.put("id",acId);
 
-                Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
-                    @Override
-                    public void onSuccess(ResponceSign responceSign) {
-                        String responseMsg = responceSign.msg;
-                        Log.i("quit",responseMsg);
-                        //删除成功时，本地数据库删除
-//                        if (responseMsg.equals("")){
-//
-//                        }
-                    }
+                                    Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                                        @Override
+                                        public void onSuccess(ResponceSign responceSign) {
+                                            String responseMsg = responceSign.msg;
+                                            Log.i("quit",responseMsg);
+                                            //删除成功时，本地数据库删除
+                                            //解散活动成功
+                                            if (responseMsg.equals("dissolution successfully")){
+                                                mySQLiteOpenHelper.deleteData("tb_activityMine",acId);
+                                                mySQLiteOpenHelper.deleteData("tb_activityToJoin",acId);
+                                                Toast.makeText(Activity_detailedInformation.this, "退出活动成功", Toast.LENGTH_SHORT).show();
+                                                finish();
+                                            }
+                                        }
 
-                    @Override
-                    public void onFailure() {
+                                        @Override
+                                        public void onFailure() {
 
-                    }
-                });
+                                        }
+                                    });
+
+                                }
+                            });
+                    builder.setPositiveButton("取消",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }else if (deleteAcBtn.getText().equals("退出活动")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage("退出活动会扣除5点信用分，确定要退出么？");
+                    builder.setNegativeButton("确定",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    String select = String.format(getString(R.string.baseURL));
+                                    String url = select+"activity/quitActivity";
+                                    Map<String,String> map = new HashMap<String, String>();
+                                    map.put("id",acId);
+
+                                    Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                                        @Override
+                                        public void onSuccess(ResponceSign responceSign) {
+                                            String responseMsg = responceSign.msg;
+                                            Log.i("quit",responseMsg);
+                                            //删除成功时，本地数据库删除
+                                            //退出活动成功
+                                           if(responseMsg.equals("quit successfully")){
+                                                mySQLiteOpenHelper.deleteData("tb_activityMine",acId);
+                                                mySQLiteOpenHelper.deleteData("tb_activityToJoin",acId);
+                                                Toast.makeText(Activity_detailedInformation.this, "解散活动成功", Toast.LENGTH_SHORT).show();
+                                                finish();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+
+                                        }
+                                    });
+
+                                }
+                            });
+                    builder.setPositiveButton("取消",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+
                 break;
 
         }

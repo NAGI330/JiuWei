@@ -1,5 +1,5 @@
 from django.urls import path
-from activity.views import CreateActivity, MineActivity, HistoryActivity, TojoinActivity, ChangeActivity, QuitActivity
+from activity.views import CreateActivity, MineActivity, HistoryActivity, ToJoinActivity, ChangeActivity, QuitActivity
 
 app_name = "activity"
 urlpatterns = [
