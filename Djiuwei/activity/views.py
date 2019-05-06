@@ -165,7 +165,7 @@ class MineActivity(View):
 
 		print("response: {}".format(response))
 		
-		return JsonResponse({"activities": response})
+		return JsonResponse({"activities": response, "msg": "paginatorSuc"})
 
 
 class HistoryActivity(View):
@@ -213,7 +213,7 @@ class HistoryActivity(View):
 		
 		print("response: {}".format(response))
 
-		return JsonResponse({"activities": response})
+		return JsonResponse({"activities": response, "msg": "paginatorSuc"})
 
 
 class TojoinActivity(View):
@@ -261,7 +261,7 @@ class TojoinActivity(View):
 		
 		print("response: {}".format(response))
 
-		return JsonResponse({"activities": response})
+		return JsonResponse({"activities": response, "msg": "paginatorSuc"})
 
 
 class QuitActivity(View):
