@@ -1,5 +1,5 @@
 from django.urls import path
-from activity.views import CreateActivity, MineActivity, HistoryActivity, ToJoinActivity, ChangeActivity, QuitActivity
+from activity.views import CreateActivity, MineActivity, HistoryActivity, TojoinActivity, ChangeActivity, QuitActivity, searchView, joinInActivity, PushHot
 
 app_name = "activity"
 urlpatterns = [
@@ -9,5 +9,8 @@ urlpatterns = [
 	path('toJoinActivity', ToJoinActivity.as_view(), name="tojoinActivity"),
 	path('changeActivity', ChangeActivity.as_view(), name="changeActivity"),
 	path('quitActivity', QuitActivity.as_view(), name="quitActivity"),
+	path('search/<str:q>', searchView.as_view(), name="search"),
+	path('joinInActivity', joinInActivity.as_view(), name="join"),
+	path('pushActivity', PushHot.as_view(), name="push"),
 ]
 

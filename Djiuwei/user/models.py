@@ -8,7 +8,7 @@ from db.base_model import BaseModel
 class User(AbstractUser, BaseModel):
 	"""用户模型类"""
 	nickname = models.CharField(max_length=20, null=True, verbose_name="昵称")
-	gender = models.BooleanField(default=None, null=True, verbose_name="性别")
+	gender = models.BooleanField(default=1, null=True, verbose_name="性别")
 	age = models.IntegerField(default=18, null=True, verbose_name="年龄")
 	head_img = models.ImageField(upload_to='images', null=True, verbose_name="头像")
 	credit_score = models.IntegerField(default=80, verbose_name="信用积分")
