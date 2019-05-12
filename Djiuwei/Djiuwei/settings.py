@@ -164,8 +164,6 @@ MEDIA_URL = 'media/'
 # 全文检索框架配置
 HAYSTACK_CONNECTIONS = {
 	"default": {
-		# 'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-		# 'URL': 'http://192.168.0.77:8983/solr/jiuwei',
 		"ENGINE": "haystack.backends.whoosh_backend.WhooshEngine",
 		"PATH": os.path.join(BASE_DIR, "whoosh_index"),
 	},
