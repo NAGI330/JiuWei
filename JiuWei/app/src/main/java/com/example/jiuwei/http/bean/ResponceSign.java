@@ -1,8 +1,8 @@
 package com.example.jiuwei.http.bean;
 
 public class ResponceSign{
-    public String msg;
-    public String cookie;
+    public String msg ;
+    public String cookie ;
     public String activities;
 
 

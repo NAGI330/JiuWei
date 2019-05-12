@@ -7,13 +7,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.Arrays;
+
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String name = "db_jiuwei"; //数据库名称
     final String CREATE_TABLE_USER_COOKIE="create table tb_userCookie(_id integer primary key autoincrement,cookie)";
-    final String CREATE_TABLE_ACTIVITY_Mine="create table tb_activityMine(_id integer primary key autoincrement,activityMine)";
-    final String CREATE_TABLE_ACTIVITY_ToJoin="create table tb_activityToJoin(_id integer primary key autoincrement,activityToJoin)";
-    final String CREATE_TABLE_ACTIVITY_History="create table tb_activityHistory(_id integer primary key autoincrement,activityHistory)";
+    final String CREATE_TABLE_ACTIVITY_Mine="create table tb_activityMine(_id integer primary key ,activityMine,Date timestamp)";
+    final String CREATE_TABLE_ACTIVITY_ToJoin="create table tb_activityToJoin(_id integer primary key ,activityToJoin,Date timestamp)";
+    final String CREATE_TABLE_ACTIVITY_History="create table tb_activityHistory(_id integer primary key ,activityHistory,Date timestamp)";
     private static final int version = 1; //数据库版本
     public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
 
@@ -50,7 +52,15 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         ContentValues values=new ContentValues();
         values.put("_id",id);
         values.put(dataname,data);
-        sqLiteDatabase.insertWithOnConflict(tables,null,values,SQLiteDatabase.CONFLICT_REPLACE);
+        //判断该数据是否存在
+        String[] array = queryDataALL(tables,"_id",null);
+        boolean flag = Arrays.asList(array).contains(id);
+        //如果存在，就更新
+        if(flag){
+            sqLiteDatabase.update(tables,values,"_id="+id,null);
+        }else{
+            sqLiteDatabase.insert(tables,null,values);
+        }
         sqLiteDatabase.close();
 
     }
@@ -69,11 +79,11 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         return data;
     }
     //查询数据某一字段所有数据的方法
-    public String[] queryDataALL(String tables,String id){
+    public String[] queryDataALL(String tables,String id,String orderBy){
         SQLiteDatabase db = getReadableDatabase();
         String data[] = new String[40];
         //创建游标对象
-        Cursor cursor = db.query(tables, new String[]{id}, null, null, null, null, null);
+        Cursor cursor = db.query(tables, new String[]{id}, null, null, null, null, orderBy);
         //利用游标遍历所有数据对象
         int i=0;
        // Log.i("while前",cursor.getString(cursor.getColumnIndex(id)));
@@ -84,6 +94,16 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
         }
         return data;
+    }
+
+    public void deleteData(String tables,String id){
+
+        SQLiteDatabase db = getReadableDatabase();
+        if(db.isOpen()) {
+            db.delete(tables, "_id=?",new String[]{id});
+            db.close();
+        }
+
     }
 
 }

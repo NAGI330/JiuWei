@@ -50,7 +50,6 @@ class SignOnView(View):
 		
 		# 邮件信息
 		send_register_active_email.delay(email, username, token)
-
 		return JsonResponse({"msg": "signOn successfully"})
 
 

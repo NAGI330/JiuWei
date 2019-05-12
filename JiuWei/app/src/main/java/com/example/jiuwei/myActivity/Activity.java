@@ -10,6 +10,7 @@ public class Activity {
     public String numMax;
     public String ownId;
     public String ownName;
+    public Boolean activityState;
 
     public String getActivityDescribe() {
         return activityDescribe;
@@ -17,6 +18,14 @@ public class Activity {
 
     public void setActivityDescribe(String activityDescribe) {
         this.activityDescribe = activityDescribe;
+    }
+
+    public Boolean getActivityState() {
+        return activityState;
+    }
+
+    public void setActivityState(Boolean activityState) {
+        this.activityState = activityState;
     }
 
     public String getActivityPlace() {

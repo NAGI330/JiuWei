@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,18 +15,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.jiuwei.LocalSQLite.MySQLiteOpenHelper;
 import com.example.jiuwei.R;
+import com.example.jiuwei.datetimeselect.DateUtil;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
 import com.example.jiuwei.http.bean.ResponceSign;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +45,97 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     public int page =1;
     private View view=null;
     private MySQLiteOpenHelper mySQLiteOpenHelper;
-    final List<Activity> activity = new ArrayList<Activity>();//实体类
+    private List<Activity> activity ;
+    private PullToRefreshListView mPullToRefreshListView;
+    BaseAdapter adapter;
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String systemTime = simpleDateFormat.format(new Date());
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        activity = new ArrayList<Activity>();
         //View view=inflater.inflate(R.layout.fragment_history,container,false);
-        view=inflater.inflate(R.layout.fragment_myactivity_activitylist,container,false);
-            initView(view);
+        view=inflater.inflate(R.layout.new_fragment_myactivity_activitylist,container,false);
+        // 创建下拉刷新的ListView
+        mPullToRefreshListView = (PullToRefreshListView) view.findViewById(R.id.pull_listview);
+        initView(view);
+
+        //两端刷新
+        mPullToRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
+        mPullToRefreshListView.setAdapter(adapter);
+        mPullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            //下拉刷新
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+
+
+                    //这里用异步任务来模拟从网络上获取数据
+                    new AsyncTask<Void, Void, Void>() {
+
+
+
+                        @Override
+                        protected Void doInBackground(Void... arg0) {
+                            try {
+                                Thread.sleep(500);//线程休眠
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+
+                        protected void onPostExecute(Void result) {
+                            //添加新的数据
+                            Log.i("onPostExecute方法","111");
+                            activity.removeAll(activity);
+                            adapter.notifyDataSetChanged();
+                            mPullToRefreshListView.setAdapter(adapter);
+                            postRequest(1);
+                            initData();
+                            mPullToRefreshListView.onRefreshComplete();
+                        }
+                    }.execute();
+
+            }
+            //上拉加载更多
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+
+                    new AsyncTask<Void, Void, Void>() {
+
+
+
+                        @Override
+                        protected Void doInBackground(Void... arg0) {
+                            try {
+                                Thread.sleep(500);//线程休眠
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+
+                        protected void onPostExecute(Void result) {
+                            //添加新的数据
+                            Log.i("上拉onPostExecute方法","222");
+//                            activity.removeAll(activity);
+//                            adapter.notifyDataSetChanged();
+//                            mPullToRefreshListView.setAdapter(adapter);
+                            page++;
+                            Log.i("page的具体数字",String.valueOf(page));
+                            postRequest(page);
+                            initMoreData();
+                            mPullToRefreshListView.onRefreshComplete();
+                        }
+                    }.execute();
+                }
+
+
+        });
+
         return view;
     }
     @Override
@@ -63,20 +157,83 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     }
 
     private void refresh() {
-        //getActivity().onAttachFragment(this);
+
+        activity.removeAll(activity);
+        adapter.notifyDataSetChanged();
+        mPullToRefreshListView.setAdapter(adapter);
         initData();
+    }
+
+    //通过数据库查询 orderby实现 故该方法暂时没用
+    private void dateSort(){
+        Collections.sort(activity, new Comparator<Activity>() {
+            @Override
+            public int compare(Activity t0, Activity t1) {
+                Date date1 = DateUtil.stringToDate(t0.getStartDate());
+                Date date2 = DateUtil.stringToDate(t1.getStartDate());
+                // 对日期字段进行升序，如果欲降序可采用after方法
+                if (date1.before(date2)) {
+                    return 1;
+                }
+                return -1;
+            }
+        });
 
     }
 
+    private void postRequest(final int page){
+        String pages = String.valueOf(page);
+        Map<String,String> map = new HashMap<String, String>();
+        map.put("page",pages);
+        String select = String.format(getString(R.string.baseURL));
+        String url = select+"activity/mineActivity";
+        Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+            @Override
+            public void onSuccess(ResponceSign responceSign)  {
+                String responseMsg =responceSign.msg;
+                //如果不为空
+                if(responseMsg.equals("numErr_Empty")){
+                    Toast.makeText(getActivity(), "没有更多了", Toast.LENGTH_SHORT).show();
+                }else if(responseMsg.equals("paginatorSuc")){
+                    //需要解析的活动键值对  key 为活动序号
+                    String responseAc = responceSign.activities;
+                    JSONObject json = JSON.parseObject(responseAc);
+                    for (Map.Entry<String, Object> entry : json.entrySet()) {
+                        mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
+                                entry.getKey(), "tb_activityMine", "activityMine",
+                                entry.getValue().toString());
+
+                        JSONObject jsonDate = JSON.parseObject(entry.getValue().toString());
+                        //将时间单独从JSON串中提出 作为排序用的标识
+                        String date = jsonDate.get("activity_time").toString()
+                                .replace("T"," ").replace("Z","");
+
+                        mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
+                                entry.getKey(), "tb_activityMine", "Date",
+                                date);
+
+                    }
+
+
+            }
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+        });
+
+    }
 
     private void initView(View view) {
-        ListView lv;//activity_main.xml里的ListView
         //实例化 （，数据库名称，工厂，版本号）
         mySQLiteOpenHelper = new MySQLiteOpenHelper(this.getActivity(), "db_jiuwei", null,1);
-        BaseAdapter adapter;
         //要实现的类
-        lv = (ListView)view.findViewById(R.id.lvList);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        postRequest(page);
+
+        mPullToRefreshListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
@@ -84,33 +241,13 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                 Intent intent = new Intent(MineFragment.this.getActivity(),Activity_detailedInformation.class);
                 //将点击项目的活动ID作为变量传给打开的activity
                 intent.putExtra("whichFragment","Mine");
-                intent.putExtra("MineAcId", activity.get(position).getActivityId());
+                if(activity.get(position-1).getActivityState()){
+                    intent.putExtra("acState","true");
+                }else intent.putExtra("acState","false");
+                intent.putExtra("isOverdue","Mine");
+                intent.putExtra("MineAcId", activity.get(position-1).getActivityId());
+                Log.i("遍历activity",activity.toString());
                 startActivity(intent);
-            }
-        });
-
-        String pages = String.valueOf(page);
-        Map<String,String> map = new HashMap<String, String>();
-        map.put("page",pages);
-        String select = String.format(getString(R.string.baseURL));
-        String url = select+"activity/myActivity";
-        Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
-            @Override
-            public void onSuccess(ResponceSign responceSign)  {
-                //需要解析的活动键值对  key 为活动序号
-                String responseAc = responceSign.activities;
-                JSONObject json = JSON.parseObject(responseAc);
-                for (Map.Entry<String, Object> entry : json.entrySet()) {
-                mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
-                        entry.getKey(),"tb_activityMine","activityMine",
-                        entry.getValue().toString());
-
-                }
-            }
-
-            @Override
-            public void onFailure() {
-
             }
         });
 
@@ -134,6 +271,21 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                     view=convertView;
                     //Log.i("info","有缓存，不需要重新生成"+position);
                 }
+
+                Log.i("系统时间",systemTime);
+                Date system = DateUtil.stringToDate(systemTime);
+                Date start = DateUtil.stringToDate(activity.get(position).getStartDate());
+                final ImageView iV = (ImageView)view.findViewById(R.id.itemState);
+
+                //true ：活动未过期     false：过期
+                if(system.before(start)){
+                    iV.setImageDrawable(getResources().getDrawable(R.mipmap.active));
+                    activity.get(position).setActivityState(true);
+                }else {
+                    iV.setImageDrawable(getResources().getDrawable(R.mipmap.overdue));
+                    activity.get(position).setActivityState(false);
+                }
+
                 final TextView tv1 = (TextView) view.findViewById(R.id.itemname);//itemname
                 tv1.setText(activity.get(position).getActivityName());//设置参数
 
@@ -153,23 +305,22 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                 return null;
             }
         };
-        lv.setAdapter(adapter);
-        //获取当前ListView点击的行数，并且得到该数据
+
 
     }
 
     public void initData(){
-    //NullPointerException
+
         try {
-            //测试取数据
+            page =1;
             //查询tb_activityMine表中，所有的活动ID
-            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityMine", "_id");
+            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityMine", "_id","Date desc");
             int i = 0;
-            for (i = 0; i < id_list.length; i++) {
+            int min = id_list.length>=4?4:id_list.length;
+            for (i = 0; i <min; i++) {
                 //依次从依据活动id从Mine表中中查询存储的JSON字符串
                 String acJSON = mySQLiteOpenHelper.queryData("tb_activityMine",
                         "activityMine","_id="+id_list[i]);
-                Log.i("aaaaaaaaaaaa",acJSON);
                 JSONObject json = JSON.parseObject(acJSON);
                 //给实体类赋值
                 Activity al = new Activity();
@@ -185,9 +336,46 @@ public class MineFragment extends Fragment implements View.OnClickListener{
 
             }
 
+
+
         }catch(NullPointerException e){
         }
     }
+
+    public void initMoreData(){
+
+        try {
+            //测试取数据
+            //查询tb_activityMine表中，所有的活动ID
+            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityMine", "_id","Date desc");
+            int i = 0;
+            int min = id_list.length>=4*page?4*page:id_list.length;
+            for (i = (page-1)*4; i <min; i++) {
+                //依次从依据活动id从Mine表中中查询存储的JSON字符串
+                String acJSON = mySQLiteOpenHelper.queryData("tb_activityMine",
+                        "activityMine","_id="+id_list[i]);
+                JSONObject json = JSON.parseObject(acJSON);
+                //给实体类赋值
+                Activity al = new Activity();
+                //设置活动ID
+                al.setActivityId(id_list[i]);
+                //将字符串转化为JSON对象
+                //设置要展示的活动属性
+                al.setActivityName("" + json.get("activity_name"));
+                al.setStartDate("" + json.get("activity_time").toString()
+                        .replace("T"," ").replace("Z",""));
+                al.setActivityType("" + json.get("activity_type"));
+
+                activity.add(al);
+
+            }
+
+
+
+        }catch(NullPointerException e){
+        }
+    }
+
     @Override
     public void onClick(View v) {
 

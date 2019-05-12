@@ -9,7 +9,6 @@ from user.models import User
 from datetime import datetime
 from time import mktime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import requests
 from haystack.query import SearchQuerySet
 from haystack.inputs import AutoQuery
 from random import randint
@@ -44,7 +43,6 @@ class PushHot(View):
 			owner = User.objects.get(id=owner_id)
 			owner_nickname = owner.nickname			
 			response[activity.id] = {"activity_name": activity_name, "activity_desc": activity_desc, "activity_time": activity_time, "activity_site": activity_site, "activity_type": activity_type, "owner_id": owner_id, "owner_nickname": owner_nickname}
-		print(response)
 
 		return JsonResponse({"response": response})
 
@@ -58,7 +56,6 @@ class CreateActivity(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 用户登录状态校验
@@ -106,7 +103,6 @@ class ChangeActivity(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 用户登录状态校验
@@ -118,10 +114,8 @@ class ChangeActivity(View):
 		try:
 			activity = Activity.objects.get(id=activity_id)
 		except Exception as e:
-			print(e)
 			return JsonResponse({"msg": "activityErr_id"})
 
-		print(request_msg)
 		activity.activity_name = request_msg.get("activity_name", "")
 		activity.activity_desc = request_msg.get("activity_desc", "")
 		activity_time = request_msg.get("activity_time", "").strip()
@@ -146,7 +140,6 @@ def response_construct(activities, user):
 	"""response 拼接"""
 	response = {i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time, "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num, "owner_id": i.owner_id, "owner_name": User.objects.get(id=i.owner_id).nickname, "participant": []} for i in activities}
 	users_id = {i.user_id for activity in activities for i in activity.useractivitymap_set.all()}
-	print(users_id)
 	# 添加字段
 	for i in activities:
 		response[i.id]["participant"] = [{id: User.objects.get(id=id).nickname} for id in users_id]
@@ -154,7 +147,6 @@ def response_construct(activities, user):
 		response[i.id]["activity_isMine"] = 1 if user.id == i.owner_id else 0
 		response[i.id]["activity_status"] = 1 if i.activity_time.timestamp() >= datetime.now().timestamp() else 0
 
-	print("response: {}".format(response))
 	return response
 
 
@@ -167,7 +159,6 @@ class MineActivity(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 用户登录状态校验
@@ -175,12 +166,10 @@ class MineActivity(View):
 		if not isinstance(user, User):
 			return JsonResponse({"msg": "userErr_unsignIn"})
 		object_list = Activity.objects.filter(owner_id=user.id).order_by("-activity_time")
-		print([i.id for i in object_list])
 
 		# 将全部结果分页
 		paginator = Paginator(object_list, 4)
 		page = int(request_msg.get("page"))
-		print("page: {}".format(page))
 		try:
 			activities = paginator.page(page)
 		except PageNotAnInteger:
@@ -203,7 +192,6 @@ class HistoryActivity(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 用户登录状态校验
@@ -221,7 +209,6 @@ class HistoryActivity(View):
 		# 将全部结果分页
 		paginator = Paginator(object_list, 4)
 		page = int(request_msg.get("page"))
-		print("page: {}".format(page))
 		try:
 			activities = paginator.page(page)
 		except PageNotAnInteger:
@@ -244,7 +231,6 @@ class TojoinActivity(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 用户登录状态校验
@@ -262,7 +248,6 @@ class TojoinActivity(View):
 		# 将全部结果分页
 		paginator = Paginator(object_list, 4)
 		page = int(request_msg.get("page"))
-		print("page: {}".format(page))
 		try:
 			activities = paginator.page(page)
 		except PageNotAnInteger:
@@ -285,7 +270,6 @@ class QuitActivity(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 用户登录状态校验
@@ -297,7 +281,6 @@ class QuitActivity(View):
 		try:
 			activity = Activity.objects.get(id=activity_id)
 		except Exception as e:
-			print(e)
 			return JsonResponse({"msg": "activityErr_id"})
 
 		try:
@@ -346,7 +329,6 @@ class searchView(View):
 				return JsonResponse({"response": "query null"})
 		if not response:
 			return JsonResponse({"response": "query null"})
-		print("===========================", response)
 
 		return JsonResponse({"response": response})
 
@@ -360,7 +342,6 @@ class joinInActivity(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 用户登录状态校验

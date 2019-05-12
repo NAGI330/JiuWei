@@ -30,7 +30,8 @@ public class MyActivityAdapter extends FragmentPagerAdapter {
         } else if (position == 2) {
             Log.i("testttt", "进入数字1了");
             return new HistoryFragment();
-        }else return new MineFragment();
+        }//else return new MineFragment();
+        else return new MineFragment();
     }
 
     @Override
