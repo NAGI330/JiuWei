@@ -53,14 +53,21 @@
         </activity>
         <activity android:name=".sign.SignOn">
         </activity>
+        <activity android:name=".sign.RetrievePwd">
+        </activity>
         <activity android:name=".MainActivity">
+        </activity>
+        <activity android:name=".personalInfo.ChangeUserInfo">
+        </activity>
+        <activity android:name=".personalInfo.ChangePicture">
+        </activity>
+        <activity android:name=".personalInfo.ChangePwd">
         </activity>
         <activity android:name=".personalInfo.Setting">
         </activity>
         <activity android:name=".personalInfo.UserMsg">
         </activity>
-        <activity android:name=".personalInfo.ChangePwd">
-        </activity>
+
         <activity android:name=".myActivity.CreateActivity"
             android:theme="@style/pop">
         </activity>
@@ -68,7 +75,7 @@
         </activity>
         <activity android:name=".myActivity.Activity_Member">
         </activity>
-        <activity android:name=".mapService.search.BaiduMapMainActivity">
+        <activity android:name=".mapService.LBSService.MapService">
         </activity>
         <activity android:name=".mapService.search.PoiSearchDemo" android:screenOrientation="portrait" android:configChanges="orientation|keyboardHidden"> </activity>
 

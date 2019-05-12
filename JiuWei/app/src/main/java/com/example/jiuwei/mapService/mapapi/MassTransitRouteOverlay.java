@@ -3,8 +3,8 @@
  */
 package com.example.jiuwei.mapService.mapapi;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.graphics.Color;
+import android.os.Bundle;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -16,8 +16,8 @@ import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.search.route.MassTransitRouteLine;
 
-import android.graphics.Color;
-import android.os.Bundle;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MassTransitRouteOverlay extends OverlayManager {
 

@@ -20,7 +20,7 @@ import com.example.jiuwei.R;
 import com.example.jiuwei.LocalSQLite.MySQLiteOpenHelper;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.ResponceSign;
+import com.example.jiuwei.http.bean.ResponseSign;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,29 +94,47 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
                     //调用com.example.jiuwei.http包下的volley接口
                     Volley.sendJSONRequest(map,
-                            url1, ResponceSign.class, new IDataListener<ResponceSign>() {
+                            url1, ResponseSign.class, new IDataListener<ResponseSign>() {
                         @Override
-                        public void onSuccess(ResponceSign responceSign) {
-                            Log.i("tostring",responceSign.toString());
-                            String response = responceSign.msg;
+                        public void onSuccess(ResponseSign responseSign) {
+                            Log.i("tostring", responseSign.toString());
+                            String response = responseSign.msg;
                             if (response.equals("userErr_notExist")) {
                                 showDialog("用户不存在，或密码错误");
                             } else if (response.equals("signIn successfully")) {
-                                String responseCookie = responceSign.cookie;
+                                String responseCookie = responseSign.cookie;
                                 JSONObject json =  JSON.parseObject(responseCookie);
                                 String cookie_value = json.get("session_id").toString();
-                                Log.i("nihao",cookie_value);
+                                String user_info = responseSign.info;
+                                /*
+                                 * 查询本地储存的cookies并与cookie_value对比，如果不同，则说明是新的用户
+                                 * 登录,这时删除本地所有库内容
+                                 */
+                                String lastUser = mySQLiteOpenHelper.queryData("tb_userCookie","cookie","_id=1");
+                                if(!cookie_value.equals(lastUser)){
+                                    //将本地数据库全部清空
+                                    mySQLiteOpenHelper.deleteDataALL("tb_userCookie");
+                                    mySQLiteOpenHelper.deleteDataALL("tb_activityMine");
+                                    mySQLiteOpenHelper.deleteDataALL("tb_activityToJoin");
+                                    mySQLiteOpenHelper.deleteDataALL("tb_activityHistory");
+                                    mySQLiteOpenHelper.deleteDataALL("tb_activitySearch");
+                                    mySQLiteOpenHelper.deleteDataALL("tb_activityPush");
+                                }
+
                                 //将cookie存入数据库
                                 mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),"1",
                                         "tb_userCookie","cookie",cookie_value);
+                                //将userMsg存入数据库
+                                mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),"1",
+                                        "tb_userCookie","userInfo",user_info);
                                 //测试取数据
                                 String cookie = mySQLiteOpenHelper.queryData("tb_userCookie","cookie","_id=1");
                                 Log.i("测试读数据",cookie);
                                 Intent intent = new Intent(SignIn.this,
                                         MainActivity.class);
                                 startActivity(intent);
-                                Log.i("signin",responceSign.msg);
-                                Log.i("signin",responceSign.cookie);
+//                                Log.i("signin",responseSign.msg);
+//                                Log.i("signin",responseSign.cookie);
 
 
                             } else if (response.equals("userErr_notActive")) {
@@ -139,6 +157,9 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 startActivity(intent);
                 break;
             case R.id.findpwd:
+                Intent intent2 = new Intent(SignIn.this,
+                        RetrievePwd.class);
+                startActivity(intent2);
                 break;
         }
 

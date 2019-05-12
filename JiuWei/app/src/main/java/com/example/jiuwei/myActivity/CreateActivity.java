@@ -19,8 +19,8 @@ import com.example.jiuwei.datetimeselect.CustomDatePicker;
 import com.example.jiuwei.datetimeselect.DateFormatUtils;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.ResponceSign;
-import com.example.jiuwei.mapService.search.BaiduMapMainActivity;
+import com.example.jiuwei.http.bean.ResponseSign;
+import com.example.jiuwei.mapService.LBSService.MapService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.createactivity);
+        setContentView(R.layout.create_activity);
 
 
         TextView canaleTv = (TextView) findViewById(R.id.createCancel);
@@ -109,8 +109,17 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
         mTimerPicker.setCanShowAnim(true);
     }
 
-
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case 1:
+                if (resultCode==RESULT_OK){
+                    acPlaceEt.setText(data.getStringExtra("data_return"));
+                }
+                break;
+            default:
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -143,8 +152,8 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.spaceSelect:
                 //acPlaceEt.setText("西安");
                 Intent intent = new Intent(CreateActivity.this,
-                        BaiduMapMainActivity.class);
-                startActivity(intent);
+                        MapService.class);
+                startActivityForResult(intent,1);
                 break;
             case R.id.timeSelect:
                 mTimerPicker.show(acTimeTv.getText().toString());
@@ -174,10 +183,10 @@ public class CreateActivity extends AppCompatActivity implements View.OnClickLis
                     map.put("activity_time",activityTimeSelect);
                     map.put("limit_num",activityNumMax);
                     map.put("activity_type",activityType);
-                    Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                    Volley.sendJSONRequest(map, url, ResponseSign.class, new IDataListener<ResponseSign>() {
                         @Override
-                        public void onSuccess(ResponceSign responceSign) {
-                            String response = responceSign.msg;
+                        public void onSuccess(ResponseSign responseSign) {
+                            String response = responseSign.msg;
                             if (response.equals("createActivity Successfully")) {
                                 Toast.makeText(CreateActivity.this, "活动创建成功！", Toast.LENGTH_SHORT).show();
                                 finish();

@@ -21,7 +21,8 @@ import com.example.jiuwei.datetimeselect.CustomDatePicker;
 import com.example.jiuwei.datetimeselect.DateFormatUtils;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.ResponceSign;
+import com.example.jiuwei.http.bean.ResponseSign;
+import com.example.jiuwei.mapService.LBSService.MapService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -108,7 +109,7 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
             acJSON = mySQLiteOpenHelper.queryData("tb_activityMine",
                     "activityMine","_id="+acId);
             //活动未过期时，让解散活动和修改活动按钮可见
-            if(getIntent().getStringExtra("acState").equals("true")){
+            if(getIntent().getStringExtra("acStatus").equals("1")){
                 deleteAcBtn.setText("解散活动");
                 deleteAcBtn.setVisibility(View.VISIBLE);
                 moreOperation.setVisibility(View.VISIBLE);
@@ -119,7 +120,9 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
             acId = getIntent().getStringExtra("ToJoinAcId");
             acJSON = mySQLiteOpenHelper.queryData("tb_activityToJoin",
                     "activityToJoin","_id="+acId);
-            deleteAcBtn.setText("退出活动");
+            if(getIntent().getStringExtra("isMine").equals("1")){
+                deleteAcBtn.setText("解散活动");
+            }else deleteAcBtn.setText("退出活动");
             deleteAcBtn.setVisibility(View.VISIBLE);
         }
         //转化为json对象
@@ -140,6 +143,17 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
         canJiaZhe = json.get("participant").toString();
 
 
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case 1:
+                if (resultCode==RESULT_OK){
+                    acPlaceTv.setText(data.getStringExtra("data_return"));
+                }
+                break;
+            default:
+        }
     }
 
 
@@ -168,11 +182,11 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
                     map.put("activity_desc",acDesTv.getText().toString());
                     map.put("activity_site",acPlaceTv.getText().toString());
                     map.put("activity_time",acTimeTv.getText().toString());
-
-                    Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                    map.put("limit_num",numMaxTv.getText().toString());
+                    Volley.sendJSONRequest(map, url, ResponseSign.class, new IDataListener<ResponseSign>() {
                         @Override
-                        public void onSuccess(ResponceSign responceSign) {
-                            String responseMsg = responceSign.msg;
+                        public void onSuccess(ResponseSign responseSign) {
+                            String responseMsg = responseSign.msg;
                             if (responseMsg.equals("change activity successfully")){
                                 Toast.makeText(Activity_detailedInformation.this, "活动修改成功", Toast.LENGTH_SHORT).show();
                                 String s="{\"activity_name\":\"" + acNameTv.getText().toString()+"\"," +
@@ -180,12 +194,13 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
                                         "\"activity_site\":\"" + acPlaceTv.getText().toString()+"\"," +
                                         "\"activity_time\":\"" + acTimeTv.getText().toString()+"\"," +
                                         "\"activity_type\":\"" + acTypeTv.getText().toString()+"\"," +
+                                        "\"activity_status\":\"" + getIntent().getStringExtra("acStatus")+"\"," +
+                                        "\"activity_isMine\":\"" +getIntent().getStringExtra("isMine")+"\"," +
                                         "\"limit_num\":\"" + numMaxTv.getText().toString()+"\"," +
                                         "\"owner_id\":\"" + ownIdTv.getText().toString()+"\"," +
                                         "\"owner_name\":\"" + ownNameTv.getText().toString()+"\"," +
                                         "\"participant_num\":\"" + member+"\"," +
                                         "\"participant\":\""+canJiaZhe+"\"}";
-                                Log.i("longlong",s);
                                 mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
                                        acId,"tb_activityMine","activityMine",
                                        s );
@@ -193,11 +208,6 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
                                         acId,"tb_activityToJoin","activityToJoin",
                                         s );
 
-                                Intent intent = new Intent("android.intent.action.CART_BROADCAST");
-                                intent.putExtra("data","refresh");
-                                LocalBroadcastManager.getInstance(Activity_detailedInformation.this).sendBroadcast(intent);
-                                sendBroadcast(intent);
-                                finish();
                             }
 
                         }
@@ -213,19 +223,21 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
             case R.id.activityMember:
                 Intent intent1 = new Intent(Activity_detailedInformation.this,
                         Activity_Member.class);
-               // intent.putExtra("acMemberList","Mine");
+                intent1.putExtra("acMemberList",canJiaZhe);
                 startActivity(intent1);
                 break;
             case R.id.timeSelect:
                 mTimerPicker.show(acTimeTv.getText().toString());
                 break;
             case R.id.placeSelect:
-                acPlaceTv.setText("西安");
+                Intent intent = new Intent(Activity_detailedInformation.this,
+                        MapService.class);
+                startActivityForResult(intent,1);
                 break;
             case R.id.deleteActivity:
                 if (deleteAcBtn.getText().equals("解散活动")){
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage("解散活动会扣除10点信用分，确定要解散么？");
+                    builder.setMessage("这是你发起的活动，该操作会扣除10点信用分，确定要解散么？");
                     builder.setNegativeButton("确定",
                             new DialogInterface.OnClickListener() {
                                 @Override
@@ -235,10 +247,10 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
                                     Map<String,String> map = new HashMap<String, String>();
                                     map.put("id",acId);
 
-                                    Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                                    Volley.sendJSONRequest(map, url, ResponseSign.class, new IDataListener<ResponseSign>() {
                                         @Override
-                                        public void onSuccess(ResponceSign responceSign) {
-                                            String responseMsg = responceSign.msg;
+                                        public void onSuccess(ResponseSign responseSign) {
+                                            String responseMsg = responseSign.msg;
                                             Log.i("quit",responseMsg);
                                             //删除成功时，本地数据库删除
                                             //解散活动成功
@@ -255,6 +267,7 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
 
                                         }
                                     });
+
 
                                 }
                             });
@@ -279,10 +292,10 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
                                     Map<String,String> map = new HashMap<String, String>();
                                     map.put("id",acId);
 
-                                    Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+                                    Volley.sendJSONRequest(map, url, ResponseSign.class, new IDataListener<ResponseSign>() {
                                         @Override
-                                        public void onSuccess(ResponceSign responceSign) {
-                                            String responseMsg = responceSign.msg;
+                                        public void onSuccess(ResponseSign responseSign) {
+                                            String responseMsg = responseSign.msg;
                                             Log.i("quit",responseMsg);
                                             //删除成功时，本地数据库删除
                                             //退出活动成功
@@ -299,6 +312,12 @@ public class Activity_detailedInformation extends AppCompatActivity implements V
 
                                         }
                                     });
+                                    Intent intent2 = new Intent("android.intent.action.CART_BROADCAST");
+                                    LocalBroadcastManager.getInstance(Activity_detailedInformation.this).sendBroadcast(intent2);
+                                    sendBroadcast(intent2);
+                                    intent2.putExtra("data","refresh");
+                                    Log.i("到finish了了！！！！！！！！","a");
+                                    finish();
 
                                 }
                             });

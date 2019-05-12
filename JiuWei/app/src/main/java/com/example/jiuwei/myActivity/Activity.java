@@ -11,6 +11,15 @@ public class Activity {
     public String ownId;
     public String ownName;
     public Boolean activityState;
+    public Boolean activityIsMine;
+
+    public Boolean getActivityIsMine() {
+        return activityIsMine;
+    }
+
+    public void setActivityIsMine(Boolean activityIsMine) {
+        this.activityIsMine = activityIsMine;
+    }
 
     public String getActivityDescribe() {
         return activityDescribe;
@@ -103,8 +112,11 @@ public class Activity {
                 ", numMax='" + numMax + '\'' +
                 ", ownId='" + ownId + '\'' +
                 ", ownName='" + ownName + '\'' +
+                ", activityState=" + activityState +
+                ", activityIsMine=" + activityIsMine +
                 '}';
     }
-
-
 }
+
+
+

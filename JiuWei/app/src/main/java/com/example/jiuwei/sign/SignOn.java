@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.jiuwei.R;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.ResponceSign;
+import com.example.jiuwei.http.bean.ResponseSign;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class SignOn extends AppCompatActivity implements View.OnClickListener {
                 // TODO Auto-generated method stub
             }
         });
-
+        showDialog("注册完成后，请在所填写的邮箱中确认注册，否则注册失败");
 
     }
     public void showDialog(String message) {
@@ -126,12 +126,12 @@ public class SignOn extends AppCompatActivity implements View.OnClickListener {
                     map.put("password",password);
                     map.put("email",emall);
                     //调用com.example.jiuwei.http包下的volley接口
-                    Volley.sendJSONRequest(map, url1, ResponceSign.class, new IDataListener<ResponceSign>() {
+                    Volley.sendJSONRequest(map, url1, ResponseSign.class, new IDataListener<ResponseSign>() {
                         @Override
-                        public void onSuccess(ResponceSign responceSign) {
-                            String response = responceSign.msg;
+                        public void onSuccess(ResponseSign responseSign) {
+                            String response = responseSign.msg;
                             if (response.equals("signOn successfully")) {
-                                Toast.makeText(SignOn.this, "注册成功，你可以登录了", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignOn.this, "注册完成，请去邮箱中确认", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(SignOn.this,
                                         SignIn.class);
                                 startActivity(intent);
