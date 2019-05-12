@@ -1,0 +1,4 @@
+{{ object.activity_name }}
+{{ object.activity_desc }}
+{{ object.activity_type }}
+{{ object.id }}

@@ -51,4 +51,5 @@ class Dynamic(BaseModel):
 		verbose_name_plural = verbose_name
 
 	def __str__(self):
-		return self.activity
+		return "{}".format(self.activity_id)
+

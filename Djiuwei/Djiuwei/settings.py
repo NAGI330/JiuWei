@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '2jott6o0jx)yf+r7n-+f*2o0z-xhckg#e%10h5=iu9-=m5zunj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'user',
 	'activity',
+	'haystack',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'Djiuwei.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 		'NAME': 'jiuwei',
-		'HOST': '127.0.0.1',
+		'HOST': '',
 		'PORT': 3306,
 		'USER': 'root',
 		'PASSWORD': '',
@@ -92,7 +93,7 @@ DATABASES = {
 CACHES = {
 	'default': {
 		'BACKEND': 'django_redis.cache.RedisCache',
-		'LOCATION': '2',
+		'LOCATION': 'redis://:password@127.0.0.1:6379/2',
 		'OPTIONS': {
 			'CLIENT_CLASS': 'django_redis.client.DefaultClient',
 		}
@@ -158,3 +159,20 @@ EMIAL_USE_TLS = True
 # images path
 MEDIA_ROOT = '/home/gs74390e2/jiuwei/static/'
 MEDIA_URL = 'media/'
+
+# 全文检索框架配置
+HAYSTACK_CONNECTIONS = {
+	"default": {
+		# 'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+		# 'URL': 'http://192.168.0.77:8983/solr/jiuwei',
+		"ENGINE": "haystack.backends.whoosh_backend.WhooshEngine",
+		"PATH": os.path.join(BASE_DIR, "whoosh_index"),
+	},
+}
+
+# 自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
+
+# 指定搜索结果美也显示的条数
+HAYSTACK_SEARCH_RESULTS_PER_PAGE=5
+

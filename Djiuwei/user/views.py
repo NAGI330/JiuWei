@@ -8,8 +8,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
 from django.conf import settings
 from django.contrib.auth import authenticate
-# from celery_tasks.tasks import send_register_active_email
-from utils.user_status import signIn
+from celery_tasks.tasks import send_register_active_email
+from utils.user_status import signIn, checkStatus, signOut
 
 # Create your views here.
 
@@ -23,7 +23,6 @@ class SignOnView(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 2.接受数据
@@ -50,14 +49,7 @@ class SignOnView(View):
 		token = token.decode("utf-8")
 		
 		# 邮件信息
-		# send_register_active_email.delay(email, username, token)
-		# 发送激活邮件(为测试使用先阻塞处理)
-		subject = "久违欢迎你!!!"
-		message = ""
-		sender = settings.EMAIL_HOST_USER
-		receiver = [email]
-		html_message = "<h1>尊敬的{}, 欢迎您注册成为久违的用户</h1>请点击下面的链接激活您的账户<br /><a href='http://127.0.0.1:8000/user/Active/{}'>http://127.0.0.1/user/Active/{}</a>".format(username, token, token)
-		send_mail(subject, message, sender, receiver, html_message=html_message)
+		send_register_active_email.delay(email, username, token)
 
 		return JsonResponse({"msg": "signOn successfully"})
 
@@ -79,8 +71,13 @@ class ActiveView(View):
 			user.save()
 			return JsonResponse({"msg": "user is active"})
 		except SignatureExpired as e:
-			print(e)
 			return JsonResponse({"msg": "active is out of time"})
+
+
+def get_info(user):
+	"""个人信息"""
+	info = {"id": user.id, "nickname": user.nickname, "email": user.email, "gender": user.gender, "age": user.age, "credit_score": user.credit_score, "self_desc": user.self_desc}
+	return info
 
 
 class SignInView(View):
@@ -93,7 +90,6 @@ class SignInView(View):
 			if not isinstance(request_msg, dict):
 				return JsonResponse({"msg": "typeErr_dict"})
 		except Exception as e:
-			print(e)
 			request_msg = {}
 
 		# 2.接受数据
@@ -111,14 +107,122 @@ class SignInView(View):
 				# 用户id存入session
 				session_id = signIn(user)
 				cookie = {"session_id": session_id}
-				return JsonResponse({"msg": "signIn successfully", "Cookie": cookie})
+				info = get_info(user)
+				return JsonResponse({"msg": "signIn successfully", "Cookie": cookie, "info": info})
 			else:
 				return JsonResponse({"msg": "userErr_notActive"})
 		else:
 			return JsonResponse({"msg": "userErr_notExist"})
 
 
-class ChangeMsg(View):
+class changeMsg(View):
 	"""修改个人信息视图"""
 	def post(self, request):
-		return JsonResponse({"changMsg": 1})
+		try:
+			# 请求格式错误处理
+			request_msg = json.loads(request.body)
+			if not isinstance(request_msg, dict):
+				return JsonResponse({"msg": "typeErr_dict"})
+		except Exception as e:
+			request_msg = {}
+
+		# 用户登录状态校验
+		user = checkStatus(request.COOKIES)
+		if not isinstance(user, User):
+			return JsonResponse({"msg": "userErr_unsignIn"})
+
+		# 未激活用户不能修改
+		if not user.is_active:
+			return JsonResponse({"msg": "userErr_unActive"})
+
+		# 修改信息
+		user.nickname = request_msg.get("nickname", "")
+		user.gender = int(request_msg.get("gender", 1))
+		user.age = int(request_msg.get("age", 18))
+		user.head_img = request_msg.get("head_img", "")
+		user.self_desc = request_msg.get("self_desc", "")
+
+		# 修改入库
+		user.save()
+
+		return JsonResponse({"msg": "change successfully"})
+
+
+class changePassword(View):
+	"""修改密码"""
+	def post(self, request):
+		try:
+			# 请求格式错误处理
+			request_msg = json.loads(request.body)
+			if not isinstance(request_msg, dict):
+				return JsonResponse({"msg": "typeErr_dict"})
+		except Exception as e:
+			request_msg = {}
+
+		# 用户登录状态校验
+		user = checkStatus(request.COOKIES)
+		if not isinstance(user, User):
+			return JsonResponse({"msg": "userErr_unsignIn"})
+
+		# 未激活用户不能修改
+		if not user.is_active:
+			return JsonResponse({"msg": "userErr_unActive"})
+
+		# 修改信息
+		password = request_msg.get("password", "")
+		user.set_password(password)
+		user.save()
+
+		return JsonResponse({"msg": "change successfully"})
+
+
+class getBackPassword(View):
+	"""修改密码"""
+	def post(self, request):
+		try:
+			# 请求格式错误处理
+			request_msg = json.loads(request.body)
+			if not isinstance(request_msg, dict):
+				return JsonResponse({"msg": "typeErr_dict"})
+		except Exception as e:
+			request_msg = {}
+
+		# 获取数据
+		username = request_msg.get("username", "")
+		password = request_msg.get("password", "")
+		try:
+			user = User.objects.get(username=username)
+		except Exception as e:
+			return JsonResponse({"msg": "userErr_notExist"})
+
+		email = user.email
+		# 加密
+		serializer = Serializer(settings.SECRET_KEY, 120)
+		info = {"username": username, "password": password}
+		token = serializer.dumps(info)
+		token = token.decode("utf-8")
+		
+		# 邮件信息
+		send_register_active_email.delay(email, username, token)
+
+		return JsonResponse({"msg": "retrieve successfully"})
+
+
+class getBackPwd(View):
+	"""确认修改密码"""
+	def get(self, request, token):
+		"""进行密码更改确认"""
+		# 解密
+		serializer = Serializer(settings.SECRET_KEY, 120)
+		try:
+			info = serializer.loads(token)
+			username = info['username']
+			password = info['password']
+			user = User.objects.get(username=username)
+			user.set_password(password)
+			user.save()
+			return JsonResponse({"msg": "pwd is changed"})
+		except SignatureExpired as e:
+			return JsonResponse({"msg": "get back pwd is out of time"})
+
+
