@@ -12,10 +12,12 @@ import java.util.Arrays;
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String name = "db_jiuwei"; //数据库名称
-    final String CREATE_TABLE_USER_COOKIE="create table tb_userCookie(_id integer primary key autoincrement,cookie)";
-    final String CREATE_TABLE_ACTIVITY_Mine="create table tb_activityMine(_id integer primary key ,activityMine,Date timestamp)";
-    final String CREATE_TABLE_ACTIVITY_ToJoin="create table tb_activityToJoin(_id integer primary key ,activityToJoin,Date timestamp)";
-    final String CREATE_TABLE_ACTIVITY_History="create table tb_activityHistory(_id integer primary key ,activityHistory,Date timestamp)";
+    final String CREATE_TABLE_USER_COOKIE="create table tb_userCookie(_id integer primary key autoincrement,cookie,userInfo)";
+    final String CREATE_TABLE_ACTIVITY_Mine="create table tb_activityMine(_id integer primary key ,activityMine,Date timestamp,activityStatus)";
+    final String CREATE_TABLE_ACTIVITY_ToJoin="create table tb_activityToJoin(_id integer primary key ,activityToJoin,Date timestamp,activityIsMine)";
+    final String CREATE_TABLE_ACTIVITY_History="create table tb_activityHistory(_id integer primary key ,activityHistory,Date timestamp,activityIsMine)";
+    final String CREATE_TABLE_ACTIVITY_Search="create table tb_activitySearch(_id integer primary key ,activitySearch)";
+    final String CREATE_TABLE_ACTIVITY_Push="create table tb_activityPush(defaultId integer primary key autoincrement,_id integer,activityPush)";
     private static final int version = 1; //数据库版本
     public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
 
@@ -32,9 +34,13 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         db.execSQL(CREATE_TABLE_USER_COOKIE);
+
         db.execSQL(CREATE_TABLE_ACTIVITY_Mine);
         db.execSQL(CREATE_TABLE_ACTIVITY_ToJoin);
         db.execSQL(CREATE_TABLE_ACTIVITY_History);
+
+        db.execSQL(CREATE_TABLE_ACTIVITY_Search);
+        db.execSQL(CREATE_TABLE_ACTIVITY_Push);
 
 
     }
@@ -46,9 +52,9 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     }
 
-    //插入数据的方法
+    //更新插入数据的方法
     public void insertData(SQLiteDatabase sqLiteDatabase,String id, String tables,String dataname,String data){
-        Log.i("调用插入数据方法了",tables+","+dataname+","+data);
+     //   Log.i("调用插入数据方法了",tables+","+dataname+","+data);
         ContentValues values=new ContentValues();
         values.put("_id",id);
         values.put(dataname,data);
@@ -64,6 +70,19 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.close();
 
     }
+    //insert有一个字段为defaultId,从０到４循环写
+    public void insertPushData(SQLiteDatabase sqLiteDatabase,int defaultId,String id, String tables,String dataname,String data){
+        Log.i("调用push插入数据方法了",tables+","+dataname+","+data);
+        ContentValues values=new ContentValues();
+        values.put("defaultId",defaultId);
+        values.put("_id",id);
+        values.put(dataname,data);
+        //判断该数据是否存在
+        sqLiteDatabase.insertWithOnConflict(tables,null,values,SQLiteDatabase.CONFLICT_REPLACE);
+        sqLiteDatabase.close();
+
+    }
+
 
     //查询数据的方法
     public String queryData(String tables,String dataname,String selecion){
@@ -101,6 +120,15 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         if(db.isOpen()) {
             db.delete(tables, "_id=?",new String[]{id});
+            db.close();
+        }
+
+    }
+    public void deleteDataALL(String tables){
+
+        SQLiteDatabase db = getReadableDatabase();
+        if(db.isOpen()) {
+            db.delete(tables, null,null);
             db.close();
         }
 

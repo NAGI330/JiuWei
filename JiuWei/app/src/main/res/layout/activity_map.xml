@@ -1,0 +1,83 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/map_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.baidu.mapapi.map.MapView>
+    <com.example.jiuwei.UIUtil.FixedEditText
+        android:id="@+id/edit_departure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="1dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="#fff"
+        android:textSize="20dp"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:hint="我的位置"/>
+    <com.example.jiuwei.UIUtil.FixedEditText
+        android:id="@+id/edit_destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="text"
+        android:lines="1"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_below="@id/edit_departure"
+        android:background="#fff"
+        android:textSize="20dp"
+        android:layout_margin="1dp"
+        />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_below="@id/edit_destination">
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            >
+
+            <Button
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="12"
+                android:onClick="searchButtonProcess"
+                android:padding="10dip"
+                android:text="城市内搜索" />
+
+            <Button
+                android:id="@+id/searchOK"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="12"
+                android:onClick="searchNearbyProcess"
+                android:padding="10dip"
+                android:text="确定" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+    <EditText
+        android:id="@+id/edit_current_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/map_activity"
+        android:visibility="visible"/>
+
+
+</RelativeLayout>

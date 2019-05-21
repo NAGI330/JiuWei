@@ -116,6 +116,52 @@ class ChangeActivity(View):
 		except Exception as e:
 			return JsonResponse({"msg": "activityErr_id"})
 
+<<<<<<< HEAD
+class MineActivity(View):
+    """我的活动视图"""
+    def post(self, request):
+        try:
+            # 请求格式错误处理
+            request_msg = json.loads(request.body)
+            if not isinstance(request_msg, dict):
+                return JsonResponse({"msg": "typeErr_dict"})
+        except Exception as e:
+            print(e)
+            request_msg = {}
+
+        # 用户登录状态校验
+        user = checkStatus(request.COOKIES)
+        if not isinstance(user, User):
+            return JsonResponse({"msg": "userErr_unsignIn"})
+        object_list = Activity.objects.filter(owner_id=user.id).order_by("-activity_time")
+
+        # 将全部结果分页
+        paginator = Paginator(object_list, 4)
+        page = int(request_msg.get("page"))
+        print("page: {}".format(page))
+        try:
+            activities = paginator.page(page)
+        except PageNotAnInteger:
+            activities = paginator.page(1)
+        except EmptyPage:
+            return JsonResponse({"msg": "numErr_Empty"})
+
+        # response 拼接
+        response = {
+        i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time,
+               "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num,
+               "owner_id": i.owner_id, "owner_name": user.nickname, "participant": []} for i in activities}
+        users_id = [i.user_id for activity in activities for i in activity.useractivitymap_set.all()]
+        users_nickname = [i.nickname for id in users_id for i in User.objects.filter(id=id)]
+        for i in activities:
+            response[i.id]["participant"] = [{"id": id, "name": name} for id in users_id for name in users_nickname if
+                                             i.owner_id != id]
+            response[i.id]["participant_num"] = len(users_id)
+
+        print("response: {}".format(response))
+
+        return JsonResponse({"activities": response, "msg": "paginatorSuc"})
+=======
 		activity.activity_name = request_msg.get("activity_name", "")
 		activity.activity_desc = request_msg.get("activity_desc", "")
 		activity_time = request_msg.get("activity_time", "").strip()
@@ -129,10 +175,161 @@ class ChangeActivity(View):
 		activity.activity_time = datetime(year, month, day, hour, minute, 0)
 		activity.activity_site = request_msg.get("activity_site", "")
 		activity.limit_num = request_msg.get("limit_num", 0)
+>>>>>>> e9a08a745b1e71dad963f74f2551b65cd7b52d85
 
 		# 数据入库
 		activity.save()
 
+<<<<<<< HEAD
+class HistoryActivity(View):
+    """历史活动视图"""
+
+    def post(self, request):
+        try:
+            # 请求格式错误处理
+            request_msg = json.loads(request.body)
+            if not isinstance(request_msg, dict):
+                return JsonResponse({"msg": "typeErr_dict"})
+        except Exception as e:
+            print(e)
+            request_msg = {}
+
+        # 用户登录状态校验
+        user = checkStatus(request.COOKIES)
+        if not isinstance(user, User):
+            return JsonResponse({"msg": "userErr_unsignIn"})
+
+        # 查询该用户相关的所有活动
+        activities = [map.activity_id for map in UserActivityMap.objects.filter(user_id=user.id)]
+
+        # 筛选出活动时间早于当前的
+        now = datetime.now()
+        object_list = Activity.objects.filter(owner_id=user.id, activity_time__lt=now).filter(id__in=activities)
+
+        # 将全部结果分页
+        paginator = Paginator(object_list, 4)
+        page = int(request_msg.get("page"))
+        print("page: {}".format(page))
+        try:
+            activities = paginator.page(page)
+        except PageNotAnInteger:
+            activities = paginator.page(1)
+        except EmptyPage:
+            return JsonResponse({"msg": "numErr_Empty"})
+
+        # response 拼接
+        response = {
+        i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time,
+               "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num,
+               "owner_id": i.owner_id, "owner_name": user.nickname, "participant": []} for i in activities}
+        users_id = [i.user_id for activity in activities for i in activity.useractivitymap_set.all()]
+        users_nickname = [i.nickname for id in users_id for i in User.objects.filter(id=id)]
+        for i in activities:
+            response[i.id]["participant"] = [{"id": id, "name": name} for id in users_id for name in users_nickname if
+                                             i.owner_id != id]
+            response[i.id]["participant_num"] = len(users_id)
+
+        print("response: {}".format(response))
+
+        return JsonResponse({"activities": response, "msg": "paginatorSuc"})
+
+
+class ToJoinActivity(View):
+    """待参加活动视图"""
+
+    def post(self, request):
+        try:
+            # 请求格式错误处理
+            request_msg = json.loads(request.body)
+            if not isinstance(request_msg, dict):
+                return JsonResponse({"msg": "typeErr_dict"})
+        except Exception as e:
+            print(e)
+            request_msg = {}
+
+        # 用户登录状态校验
+        user = checkStatus(request.COOKIES)
+        if not isinstance(user, User):
+            return JsonResponse({"msg": "userErr_unsignIn"})
+
+        # 查询该用户相关的所有活动
+        activities = [map.activity_id for map in UserActivityMap.objects.filter(user_id=user)]
+
+        # 筛选出活动时间早于当前的
+        now = datetime.now()
+        object_list = Activity.objects.filter(owner_id=user.id, activity_time__gt=now).filter(id__in=activities)
+
+        # 将全部结果分页
+        paginator = Paginator(object_list, 4)
+        page = int(request_msg.get("page"))
+        print("page: {}".format(page))
+        try:
+            activities = paginator.page(page)
+        except PageNotAnInteger:
+            activities = paginator.page(1)
+        except EmptyPage:
+            return JsonResponse({"msg": "numErr_Empty"})
+
+        # response 拼接
+        response = {
+        i.id: {"activity_name": i.activity_name, "activity_desc": i.activity_desc, "activity_time": i.activity_time,
+               "activity_site": i.activity_site, "activity_type": i.activity_type, "limit_num": i.limit_num,
+               "owner_id": i.owner_id, "owner_name": user.nickname, "participant": []} for i in activities}
+        users_id = [i.user_id for activity in activities for i in activity.useractivitymap_set.all()]
+        print(users_id)
+        users_nickname = [i.nickname for id in users_id for i in User.objects.filter(id=id)]
+        for i in activities:
+            response[i.id]["participant"] = [{"id": id, "name": name} for id in users_id for name in users_nickname if
+                                             i.owner_id != id]
+            response[i.id]["participant_num"] = len(users_id)
+
+        print("response: {}".format(response))
+
+        return JsonResponse({"activities": response, "msg": "paginatorSuc"})
+
+
+class QuitActivity(View):
+    """退出活动"""
+
+    def post(self, request):
+        try:
+            # 请求格式错误处理
+            request_msg = json.loads(request.body)
+            if not isinstance(request_msg, dict):
+                return JsonResponse({"msg": "typeErr_dict"})
+        except Exception as e:
+            print(e)
+            request_msg = {}
+
+        # 用户登录状态校验
+        user = checkStatus(request.COOKIES)
+        if not isinstance(user, User):
+            return JsonResponse({"msg": "userErr_unsignIn"})
+
+        activity_id = request_msg.get("id", 0)
+        try:
+            activity = Activity.objects.get(id=activity_id)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"msg": "activityErr_id"})
+
+        try:
+            uamap = UserActivityMap.objects.get(user_id=user.id, activity_id=activity.id)
+        except Exception as e:
+            return JsonResponse({"msg": "uamapErr_notExist"})
+        uamap.delete()
+
+        user.credit_score -= 5
+        if user.id != activity.owner_id:
+            score = user.credit_score
+            user.save()
+            return JsonResponse({"msg": "quit successfully", "credit_score": score})
+
+        activity.delete()
+        user.credit_score -= 5
+        score = user.credit_score
+        return JsonResponse({"msg": "dissolution successfully", "credit_score": score})
+=======
 		return JsonResponse({"msg": "change activity successfully"})
 
 
@@ -358,3 +555,4 @@ class joinInActivity(View):
 		uamap.save()
 		return JsonResponse({"msg": "join successfully"})
 
+>>>>>>> e9a08a745b1e71dad963f74f2551b65cd7b52d85

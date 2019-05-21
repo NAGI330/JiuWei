@@ -26,7 +26,7 @@ import com.example.jiuwei.LocalSQLite.MySQLiteOpenHelper;
 import com.example.jiuwei.R;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.ResponceSign;
+import com.example.jiuwei.http.bean.ResponseSign;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -43,6 +43,7 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
     private List<Activity> activity ;
     private PullToRefreshListView mPullToRefreshListView;
     BaseAdapter adapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -161,16 +162,16 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
         map.put("page",pages);
         String select = String.format(getString(R.string.baseURL));
         String url = select+"activity/toJoinActivity";
-        Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+        Volley.sendJSONRequest(map, url, ResponseSign.class, new IDataListener<ResponseSign>() {
             @Override
-            public void onSuccess(ResponceSign responceSign)  {
-                String responseMsg =responceSign.msg;
+            public void onSuccess(ResponseSign responseSign)  {
+                String responseMsg = responseSign.msg;
                 //如果不为空
                 if(responseMsg.equals("numErr_Empty")){
                     Toast.makeText(getActivity(), "没有更多了", Toast.LENGTH_SHORT).show();
                 }else if(responseMsg.equals("paginatorSuc")) {
 
-                    String responseAc = responceSign.activities;
+                    String responseAc = responseSign.activities;
                     JSONObject json = JSON.parseObject(responseAc);
                     for (Map.Entry<String, Object> entry : json.entrySet()) {
                         mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
@@ -184,6 +185,11 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
                         mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
                                 entry.getKey(), "tb_activityToJoin", "Date",
                                 date);
+                        //将是否是自己的从JSON串提出
+                        String isMine =jsonDate.get("activity_isMine").toString();
+                        mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
+                                entry.getKey(), "tb_activityToJoin", "activityIsMine",
+                                isMine);
 
                     }
 
@@ -212,8 +218,13 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
                 Intent intent = new Intent(ToJoinFragment.this.getActivity(),Activity_detailedInformation.class);
                 //将点击项目的活动ID作为变量传给打开的activity
                 intent.putExtra("whichFragment","ToJoin");
+                intent.putExtra("acStatus","1");
                 intent.putExtra("ToJoinAcId", activity.get(position-1).getActivityId());
-                Log.i("遍历activity",activity.toString());
+                if (activity.get(position-1).getActivityIsMine()){
+                    intent.putExtra("isMine","1");
+                }else intent.putExtra("isMine","0");
+
+
                 startActivity(intent);
             }
         });
@@ -239,8 +250,14 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
                     //Log.i("info","有缓存，不需要重新生成"+position);
                 }
 
+
                 final ImageView iV = (ImageView)view.findViewById(R.id.itemState);
                 iV.setImageDrawable(getResources().getDrawable(R.mipmap.active));
+
+                if(activity.get(position).getActivityIsMine()) {
+                    final ImageView iV2 = (ImageView) view.findViewById(R.id.itemCrown);
+                    iV2.setImageDrawable(getResources().getDrawable(R.mipmap.crown));
+                }
 
                 final TextView tv1 = (TextView) view.findViewById(R.id.itemname);//itemname
                 tv1.setText(activity.get(position).getActivityName());//设置参数
@@ -270,7 +287,7 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
         try {
             //测试取数据
             //查询tb_activityToJoin表中，所有的活动ID
-            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityToJoin", "_id","Date desc");
+            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityToJoin", "_id","Date asc");
             int i = 0;
             int min = id_list.length>=4?4:id_list.length;
             for (i = 0; i < min; i++) {
@@ -289,6 +306,11 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
                         .replace("T"," ").replace("Z",""));
                 al.setActivityType("" + json.get("activity_type"));
 
+                if(json.get("activity_isMine").toString().equals("1")){
+                    al.setActivityIsMine(true);
+                }else if(json.get("activity_isMine").toString().equals("0")){
+                    al.setActivityIsMine(false);
+                }
                 activity.add(al);
 
             }
@@ -303,7 +325,7 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
         try {
             //测试取数据
 
-            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityToJoin", "_id","Date desc");
+            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityToJoin", "_id","Date asc");
             int i = 0;
             int min = id_list.length>=4*page?4*page:id_list.length;
             for (i = (page-1)*4; i <min; i++) {
@@ -321,7 +343,11 @@ public class ToJoinFragment extends Fragment implements View.OnClickListener{
                 al.setStartDate("" + json.get("activity_time").toString()
                         .replace("T"," ").replace("Z",""));
                 al.setActivityType("" + json.get("activity_type"));
-
+                if(json.get("activity_isMine").toString().equals("1")){
+                    al.setActivityIsMine(true);
+                }else {
+                    al.setActivityIsMine(false);
+                }
                 activity.add(al);
 
             }

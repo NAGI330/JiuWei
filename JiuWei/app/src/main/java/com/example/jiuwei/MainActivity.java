@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.example.jiuwei.adapter.PersonalAdapter;
 import com.example.jiuwei.friend.Friend_Fragment;
-import com.example.jiuwei.message.Msg_Fragment;
+import com.example.jiuwei.search.Search_Fragment;
 import com.example.jiuwei.myActivity.CreateActivity;
 import com.example.jiuwei.myActivity.MyActivity_Fragment;
 import com.example.jiuwei.personalInfo.ChangePwd;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fragment_push = new Push_Fragment();
         fragment_friend = new Friend_Fragment();
         fragment_myActivity = new MyActivity_Fragment();
-        fragment_msg = new Msg_Fragment();
+        fragment_msg = new Search_Fragment();
         fragment_userMenu = new UserMenu_Fragment();
 
 
@@ -145,10 +145,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         radio_me.setOnClickListener(this);
         //lvDrawer.setOnItemClickListener
 
-        //初始时向容器中添加第一个Fragment对象
+        //初始时向容器中添加第一个Fragment对象,并提前加载myActivity里的数据
+        replaceFragment(fragment_myActivity);
         replaceFragment(fragment_push);
 
-        //hide_showFragment(fragment_push);
+        //hide_showFragment(fragment_search);
         //为侧滑菜单设置Adapter，并为ListView添加单击事件监听器
         lvDrawer = (ListView) findViewById(R.id.left_drawer);
         personalAdapter = new PersonalAdapter(this);

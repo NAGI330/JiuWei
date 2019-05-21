@@ -27,6 +27,7 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
 
 
 
+
     MySQLiteOpenHelper mySQLiteOpenHelper;
 
 
@@ -46,6 +47,7 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
     private void initView(View view) {
         myacTabLayout= (TabLayout) view.findViewById(R.id.tabLayout_home_fragment);
         myacViewPager= (ViewPager) view.findViewById(R.id.viewPager_home_fragment);
+
         //getSupportFragmentManager()方法在Activity中使用
         //嵌套Fragment拿到FragmentManager要用这个方法 getChildFragmentManager()
         myActivityAdapter =new MyActivityAdapter(getChildFragmentManager());
@@ -64,7 +66,7 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void initEvents(View view) {
+    private void initEvents(final View view) {
         myacTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
@@ -73,10 +75,12 @@ public class MyActivity_Fragment extends Fragment implements View.OnClickListene
 
                 if (tab == tab_Mine) {
                     myacViewPager.setCurrentItem(0);
+
                     Log.d("tag", "进入数字0了");
 
                 } else if (tab == tab_ToJoin) {
                     myacViewPager.setCurrentItem(1);
+
                     Log.d("tag", "进入数字1了");
 
                 } else if (tab == tab_History) {

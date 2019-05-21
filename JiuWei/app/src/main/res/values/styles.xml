@@ -47,6 +47,10 @@
         <item>吃饭</item>
         <item>逛街</item>
     </string-array>
+    <string-array name="spinnerGenderType">
+        <item>女</item>
+        <item>男</item>
+    </string-array>
 
 
 </resources>

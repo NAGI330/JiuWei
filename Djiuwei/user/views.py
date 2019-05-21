@@ -8,8 +8,14 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
 from django.conf import settings
 from django.contrib.auth import authenticate
+<<<<<<< HEAD
+# from celery_tasks.tasks import send_register_active_email
+from utils.user_status import signIn
+
+=======
 from celery_tasks.tasks import send_register_active_email
 from utils.user_status import signIn, checkStatus, signOut
+>>>>>>> e9a08a745b1e71dad963f74f2551b65cd7b52d85
 
 # Create your views here.
 
@@ -80,6 +86,43 @@ def get_info(user):
 
 
 class SignInView(View):
+<<<<<<< HEAD
+    """登录视图"""
+
+    def post(self, request):
+        """登录校验"""
+        # 1.请求数据校验
+        try:
+            request_msg = json.loads(request.body)
+            if not isinstance(request_msg, dict):
+                return JsonResponse({"msg": "typeErr_dict"})
+        except Exception as e:
+            print(e)
+            request_msg = {}
+
+        # 2.接受数据
+        username = request_msg.get("username", "")
+        password = request_msg.get("password", "")
+
+        # 3.校验数据
+        if not all([username, password]):
+            return JsonResponse({"msg": "fieldErr_lose"})
+
+        # 4.登录验证
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                # 用户id存入session
+                session_id = signIn(user)
+                cookie = {"session_id": session_id}
+                return JsonResponse({"msg": "signIn successfully", "Cookie": cookie})
+            else:
+                return JsonResponse({"msg": "userErr_notActive"})
+        else:
+            return JsonResponse({"msg": "userErr_notExist"})
+
+
+=======
 	"""登录视图"""
 	def post(self, request):
 		"""登录校验"""
@@ -112,6 +155,7 @@ class SignInView(View):
 				return JsonResponse({"msg": "userErr_notActive"})
 		else:
 			return JsonResponse({"msg": "userErr_notExist"})
+>>>>>>> e9a08a745b1e71dad963f74f2551b65cd7b52d85
 
 
 class changeMsg(View):

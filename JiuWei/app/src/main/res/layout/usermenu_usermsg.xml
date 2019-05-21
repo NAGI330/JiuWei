@@ -1,12 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:background="@mipmap/blue">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TableRow
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp">
+            <TextView
+                android:id="@+id/backto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/line"
+                android:gravity="left"
+                android:text="   返  回"
+                android:textSize="18sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="个人信息界面"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="   占  位"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="1.5dp"
+                android:layout_weight="1"
+                android:background="#000000" />
+        </TableRow>
+    </TableLayout>
+
+
+
+<ScrollView   xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:scrollbars="none"
+   >
+
+
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginBottom="10dp"
+    >
+    <TableRow>
+    </TableRow>
+
+    <!--我的信息-->
+        <ImageView
+            android:id="@+id/image_user_avatar"
+            android:src="@drawable/ic_launcher_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"/>
+
+    <TableRow>
+        <TextView />
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:text="信用分  "
+            android:textSize="30dp"/>
+        <TextView
+            android:id="@+id/text_user_credit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:layout_toRightOf="@id/image_user_avatar"
+            android:layout_alignTop="@id/image_user_avatar"
+            android:text="-1"/>
+    </TableRow>
+    <TableRow>
+        <TextView />
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:text="用户ID"
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/text_user_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:textSize="20dp"
+          />
+    </TableRow>
+    <TableRow>
+        <TextView />
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:textSize="20dp"
+            android:text="昵称"/>
+        <EditText
+            android:id="@+id/text_user_nickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:background="@drawable/sign_edittext_type"
+            android:textSize="20dp" />
+    </TableRow>
+    <TableRow>
+        <TextView />
+    </TableRow>
+        <TableRow>
+            <TextView
+                android:text="个性签名"
+                android:textSize="20dp"/>
+            <EditText
+                android:id="@+id/text_user_signature"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:enabled="false"
+                android:layout_weight="1"
+                android:background="@drawable/sign_edittext_type"
+                android:textSize="20dp"
+                android:hint="表达一下自己的想法吧！"/>
+        </TableRow>
+    <TableRow>
+        <TextView />
+    </TableRow>
+        <TableRow>
+            <TextView
+                android:text="性别"
+                android:textSize="20dp" />
+            <Spinner
+                android:id="@+id/text_user_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/spinnerGenderType"
+                android:layout_weight="1"
+                android:clickable="false"
+                android:background="@drawable/sign_edittext_type"
+                android:textSize="20dp" />
+        </TableRow>
+    <TableRow>
+        <TextView />
+    </TableRow>
+        <TableRow>
+            <TextView
+                android:text="年龄"
+                android:textSize="20dp"/>
+            <EditText
+                android:id="@+id/text_user_age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/sign_edittext_type"
+                android:enabled="false"
+                android:textSize="20dp"
+                android:hint="年龄"/>
+        </TableRow>
+    <TableRow>
+        <TextView />
+    </TableRow>
+        <TableRow>
+            <TextView android:text="绑定邮箱"
+                android:textSize="20dp"/>
+            <TextView
+                android:id="@+id/text_user_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:layout_weight="1"
+                android:textSize="20dp"
+                android:hint="邮箱"/>
+        </TableRow>
+<TableRow>
+    <TextView />
+</TableRow>
+
+
+
+    <!--跳转到用户信息编辑页面-->
+    <Button
+        android:id="@+id/button_user_edit"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="这是我的信息修改页面" />
+        android:layout_margin="10dp"
+        android:layout_marginTop="20dp"
+        android:text="编辑"/>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/button_user_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@id/button_user_edit"
+        android:text="注销" />
+</TableLayout>
+
+</ScrollView>
+</LinearLayout>

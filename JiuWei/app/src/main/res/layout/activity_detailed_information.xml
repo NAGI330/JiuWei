@@ -258,7 +258,7 @@
                         android:gravity="right"
                         android:paddingTop="10sp"
                         android:paddingBottom="10sp"
-                        android:text="共1人  >"
+                        android:text="共-1人  >"
                         android:textSize="18sp" />
 
                 </TableRow>
@@ -293,6 +293,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:visibility="invisible"
+                                android:maxLines="1"
                                 android:text="选择地点" />
 
                         </TableRow>
@@ -320,6 +321,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:visibility="invisible"
+                                android:maxLines="1"
                                 android:text="选择时间" />
                         </TableRow>
 

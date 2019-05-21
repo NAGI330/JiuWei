@@ -27,7 +27,7 @@ import com.example.jiuwei.R;
 import com.example.jiuwei.datetimeselect.DateUtil;
 import com.example.jiuwei.http.IDataListener;
 import com.example.jiuwei.http.Volley;
-import com.example.jiuwei.http.bean.ResponceSign;
+import com.example.jiuwei.http.bean.ResponseSign;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -45,7 +45,7 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     public int page =1;
     private View view=null;
     private MySQLiteOpenHelper mySQLiteOpenHelper;
-    private List<Activity> activity ;
+    private List<Activity> activity = new ArrayList<Activity>();
     private PullToRefreshListView mPullToRefreshListView;
     BaseAdapter adapter;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -54,16 +54,15 @@ public class MineFragment extends Fragment implements View.OnClickListener{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = new ArrayList<Activity>();
         //View view=inflater.inflate(R.layout.fragment_history,container,false);
         view=inflater.inflate(R.layout.new_fragment_myactivity_activitylist,container,false);
         // 创建下拉刷新的ListView
         mPullToRefreshListView = (PullToRefreshListView) view.findViewById(R.id.pull_listview);
         initView(view);
-
         //两端刷新
         mPullToRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
         mPullToRefreshListView.setAdapter(adapter);
+        //adapter.notifyDataSetChanged();
         mPullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             //下拉刷新
             @Override
@@ -88,12 +87,11 @@ public class MineFragment extends Fragment implements View.OnClickListener{
 
                         protected void onPostExecute(Void result) {
                             //添加新的数据
-                            Log.i("onPostExecute方法","111");
                             activity.removeAll(activity);
-                            adapter.notifyDataSetChanged();
-                            mPullToRefreshListView.setAdapter(adapter);
                             postRequest(1);
                             initData();
+                            adapter.notifyDataSetChanged();
+                            mPullToRefreshListView.setAdapter(adapter);
                             mPullToRefreshListView.onRefreshComplete();
                         }
                     }.execute();
@@ -121,9 +119,6 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                         protected void onPostExecute(Void result) {
                             //添加新的数据
                             Log.i("上拉onPostExecute方法","222");
-//                            activity.removeAll(activity);
-//                            adapter.notifyDataSetChanged();
-//                            mPullToRefreshListView.setAdapter(adapter);
                             page++;
                             Log.i("page的具体数字",String.valueOf(page));
                             postRequest(page);
@@ -187,16 +182,16 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         map.put("page",pages);
         String select = String.format(getString(R.string.baseURL));
         String url = select+"activity/mineActivity";
-        Volley.sendJSONRequest(map, url, ResponceSign.class, new IDataListener<ResponceSign>() {
+        Volley.sendJSONRequest(map, url, ResponseSign.class, new IDataListener<ResponseSign>() {
             @Override
-            public void onSuccess(ResponceSign responceSign)  {
-                String responseMsg =responceSign.msg;
+            public void onSuccess(ResponseSign responseSign)  {
+                String responseMsg = responseSign.msg;
                 //如果不为空
                 if(responseMsg.equals("numErr_Empty")){
                     Toast.makeText(getActivity(), "没有更多了", Toast.LENGTH_SHORT).show();
                 }else if(responseMsg.equals("paginatorSuc")){
                     //需要解析的活动键值对  key 为活动序号
-                    String responseAc = responceSign.activities;
+                    String responseAc = responseSign.activities;
                     JSONObject json = JSON.parseObject(responseAc);
                     for (Map.Entry<String, Object> entry : json.entrySet()) {
                         mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
@@ -211,6 +206,11 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                         mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
                                 entry.getKey(), "tb_activityMine", "Date",
                                 date);
+                        //将是否过期状态从JSON串提出
+                        String state =jsonDate.get("activity_status").toString();
+                        mySQLiteOpenHelper.insertData(mySQLiteOpenHelper.getReadableDatabase(),
+                                entry.getKey(), "tb_activityMine", "activityStatus",
+                                state);
 
                     }
 
@@ -232,6 +232,8 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         //要实现的类
 
         postRequest(page);
+        initData();
+
 
         mPullToRefreshListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -241,17 +243,17 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                 Intent intent = new Intent(MineFragment.this.getActivity(),Activity_detailedInformation.class);
                 //将点击项目的活动ID作为变量传给打开的activity
                 intent.putExtra("whichFragment","Mine");
+                //活动是否过期
                 if(activity.get(position-1).getActivityState()){
-                    intent.putExtra("acState","true");
-                }else intent.putExtra("acState","false");
+                    intent.putExtra("acStatus","1");
+                }else intent.putExtra("acStatus","0");
                 intent.putExtra("isOverdue","Mine");
                 intent.putExtra("MineAcId", activity.get(position-1).getActivityId());
-                Log.i("遍历activity",activity.toString());
+                intent.putExtra("isMine","1");
                 startActivity(intent);
             }
         });
 
-        initData();
         adapter = new BaseAdapter() {
             @Override
             public int getCount() {
@@ -272,13 +274,11 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                     //Log.i("info","有缓存，不需要重新生成"+position);
                 }
 
-                Log.i("系统时间",systemTime);
-                Date system = DateUtil.stringToDate(systemTime);
-                Date start = DateUtil.stringToDate(activity.get(position).getStartDate());
                 final ImageView iV = (ImageView)view.findViewById(R.id.itemState);
-
+                final ImageView iV2 = (ImageView)view.findViewById(R.id.itemCrown);
+                iV2.setImageDrawable(getResources().getDrawable(R.mipmap.crown));
                 //true ：活动未过期     false：过期
-                if(system.before(start)){
+                if(activity.get(position).getActivityState()){
                     iV.setImageDrawable(getResources().getDrawable(R.mipmap.active));
                     activity.get(position).setActivityState(true);
                 }else {
@@ -314,9 +314,10 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         try {
             page =1;
             //查询tb_activityMine表中，所有的活动ID
-            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityMine", "_id","Date desc");
+            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityMine", "_id","activityStatus desc,Date asc");
             int i = 0;
-            int min = id_list.length>=4?4:id_list.length;
+           int min = id_list.length>=4?4:id_list.length;
+           // int min =id_list.length;
             for (i = 0; i <min; i++) {
                 //依次从依据活动id从Mine表中中查询存储的JSON字符串
                 String acJSON = mySQLiteOpenHelper.queryData("tb_activityMine",
@@ -332,6 +333,12 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                 al.setStartDate("" + json.get("activity_time").toString()
                         .replace("T"," ").replace("Z",""));
                 al.setActivityType("" + json.get("activity_type"));
+                //0 过期  1 未过期
+                if (json.get("activity_status").toString().equals("1")){
+                    al.setActivityState(true);
+                }else {
+                    al.setActivityState(false);
+                }
                 activity.add(al);
 
             }
@@ -347,9 +354,10 @@ public class MineFragment extends Fragment implements View.OnClickListener{
         try {
             //测试取数据
             //查询tb_activityMine表中，所有的活动ID
-            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityMine", "_id","Date desc");
+            String id_list[] = mySQLiteOpenHelper.queryDataALL("tb_activityMine", "_id","activityStatus desc,Date asc");
             int i = 0;
             int min = id_list.length>=4*page?4*page:id_list.length;
+            Date system = DateUtil.stringToDate(systemTime);
             for (i = (page-1)*4; i <min; i++) {
                 //依次从依据活动id从Mine表中中查询存储的JSON字符串
                 String acJSON = mySQLiteOpenHelper.queryData("tb_activityMine",
@@ -365,7 +373,17 @@ public class MineFragment extends Fragment implements View.OnClickListener{
                 al.setStartDate("" + json.get("activity_time").toString()
                         .replace("T"," ").replace("Z",""));
                 al.setActivityType("" + json.get("activity_type"));
-
+//                if(system.before(start)){
+//                    al.setActivityState(true);
+//                }else {
+//                    al.setActivityState(false);
+//                }
+                //0 过期  1 未过期
+                if (json.get("activity_status").toString().equals("1")){
+                    al.setActivityState(true);
+                }else {
+                    al.setActivityState(false);
+                }
                 activity.add(al);
 
             }
